@@ -1,0 +1,7 @@
+<resources>
+    <color name="surface">#FAFAFA</color>
+    <color name="surface_dark">#121212</color>
+    <color name="primary">#1F1F1F</color>
+    <color name="accent">#2A66E3</color>
+    <color name="selected">#DDE7FF</color>
+</resources>
