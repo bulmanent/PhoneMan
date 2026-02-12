@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_up"
+        android:icon="@android:drawable/ic_menu_revert"
+        android:title="@string/action_change_root"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_refresh"
+        android:icon="@android:drawable/ic_popup_sync"
+        android:title="@string/action_refresh"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_new_folder"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="@string/action_new_folder"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_paste"
+        android:icon="@android:drawable/ic_menu_save"
+        android:title="@string/action_paste"
+        app:showAsAction="ifRoom" />
+</menu>

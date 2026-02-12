@@ -3,7 +3,9 @@ package ie.neil.phoneman
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
@@ -19,6 +21,11 @@ import java.io.InputStream
 import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        private const val PREFS_NAME = "phoneman"
+        private const val KEY_ROOT_URI = "root_uri"
+    }
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: FileAdapter
 
@@ -32,10 +39,12 @@ class MainActivity : AppCompatActivity() {
     private val pickRoot = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             val uri = it.data?.data ?: return@registerForActivityResult
-            contentResolver.takePersistableUriPermission(
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-            )
+            val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            try {
+                contentResolver.takePersistableUriPermission(uri, flags)
+            } catch (_: SecurityException) {
+                Toast.makeText(this, R.string.error_permission_not_persisted, Toast.LENGTH_SHORT).show()
+            }
             saveRoot(uri)
             openRoot(uri)
         }
@@ -73,11 +82,17 @@ class MainActivity : AppCompatActivity() {
         binding.fileList.layoutManager = LinearLayoutManager(this)
         binding.fileList.adapter = adapter
 
-        val stored = getSharedPreferences("phoneman", MODE_PRIVATE).getString("root_uri", null)
-        if (stored == null) {
+        val stored = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(KEY_ROOT_URI, null)
+        val persistedRoots = getPersistedTreeUris()
+        val initialRoot = stored?.let(Uri::parse)?.takeIf { uri ->
+            persistedRoots.any { it == uri }
+        } ?: persistedRoots.firstOrNull()
+
+        if (initialRoot == null) {
             requestRoot()
         } else {
-            openRoot(Uri.parse(stored))
+            saveRoot(initialRoot)
+            openRoot(initialRoot)
         }
     }
 
@@ -119,35 +134,76 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_up -> {
-                requestRoot()
+                showRootChooser()
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    private fun requestRoot() {
+    private fun requestRoot(initialUri: Uri? = rootUri) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
         intent.addFlags(
             Intent.FLAG_GRANT_READ_URI_PERMISSION or
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
                 Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && initialUri != null) {
+            intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri)
+        }
         pickRoot.launch(intent)
     }
 
     private fun saveRoot(uri: Uri) {
-        getSharedPreferences("phoneman", MODE_PRIVATE)
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
             .edit()
-            .putString("root_uri", uri.toString())
+            .putString(KEY_ROOT_URI, uri.toString())
             .apply()
+    }
+
+    private fun showRootChooser() {
+        val roots = getPersistedTreeUris()
+        if (roots.isEmpty()) {
+            requestRoot()
+            return
+        }
+
+        val labels = roots.map { uri ->
+            DocumentFile.fromTreeUri(this, uri)?.name
+                ?: uri.lastPathSegment
+                ?: getString(R.string.path_unknown)
+        } + getString(R.string.action_add_folder)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.choose_folder)
+            .setItems(labels.toTypedArray()) { _, which ->
+                if (which == roots.size) {
+                    requestRoot()
+                } else {
+                    val selected = roots[which]
+                    saveRoot(selected)
+                    openRoot(selected)
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun getPersistedTreeUris(): List<Uri> {
+        return contentResolver.persistedUriPermissions
+            .asSequence()
+            .filter { it.isReadPermission && it.isWritePermission }
+            .map { it.uri }
+            .filter { DocumentsContract.isTreeUri(it) }
+            .toList()
     }
 
     private fun openRoot(uri: Uri) {
         rootUri = uri
         val root = DocumentFile.fromTreeUri(this, uri)
-        if (root == null) {
-            requestRoot()
+        if (root == null || !root.canRead()) {
+            Toast.makeText(this, R.string.error_folder_access_lost, Toast.LENGTH_SHORT).show()
+            requestRoot(uri)
             return
         }
         dirStack.clear()

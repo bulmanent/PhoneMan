@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "ie.neil.phoneman.app-mergeDebugResources-31:/layout/item_file.xml",
+        "source": "ie.neil.phoneman.app-main-34:/layout/item_file.xml"
+    },
+    {
+        "merged": "ie.neil.phoneman.app-mergeDebugResources-31:/layout/activity_main.xml",
+        "source": "ie.neil.phoneman.app-main-34:/layout/activity_main.xml"
+    }
+]

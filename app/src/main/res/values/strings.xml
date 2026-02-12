@@ -4,6 +4,7 @@
     <string name="action_new_folder">New folder</string>
     <string name="action_paste">Paste</string>
     <string name="action_change_root">Change root</string>
+    <string name="action_add_folder">Add folder…</string>
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
     <string name="action_delete">Delete</string>
@@ -15,5 +16,8 @@
     <string name="cancel">Cancel</string>
     <string name="rename_title">Rename</string>
     <string name="new_folder_title">New folder</string>
+    <string name="choose_folder">Open folder</string>
+    <string name="error_permission_not_persisted">Access granted, but could not persist this folder permission.</string>
+    <string name="error_folder_access_lost">Folder access expired. Please select it again.</string>
     <string name="path_unknown">Storage</string>
 </resources>

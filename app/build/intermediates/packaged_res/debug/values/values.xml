@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="accent">#2A66E3</color>
+    <color name="primary">#1F1F1F</color>
+    <color name="selected">#DDE7FF</color>
+    <color name="surface">#FAFAFA</color>
+    <color name="surface_dark">#121212</color>
+    <string name="action_change_root">Change root</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_new_folder">New folder</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_select_all">Select all</string>
+    <string name="app_name">PhoneMan</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="confirm_delete">Delete selected items?</string>
+    <string name="empty_folder">This folder is empty.</string>
+    <string name="new_folder_title">New folder</string>
+    <string name="path_unknown">Storage</string>
+    <string name="rename_title">Rename</string>
+    <style name="Theme.PhoneMan" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowLightStatusBar" ns1:targetApi="m">false</item>
+    </style>
+</resources>
