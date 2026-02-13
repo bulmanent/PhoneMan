@@ -29,6 +29,7 @@ layout activity_main
 layout item_file
 menu main_menu
 menu selection_menu
+string action_add_folder
 string action_change_root
 string action_copy
 string action_cut
@@ -40,9 +41,12 @@ string action_rename
 string action_select_all
 string app_name
 string cancel
+string choose_folder
 string confirm
 string confirm_delete
 string empty_folder
+string error_folder_access_lost
+string error_permission_not_persisted
 string new_folder_title
 string path_unknown
 string rename_title

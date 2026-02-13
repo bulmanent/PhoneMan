@@ -3710,6 +3710,7 @@ string abc_searchview_description_voice
 string abc_shareactionprovider_share_with
 string abc_shareactionprovider_share_with_application
 string abc_toolbar_collapse_description
+string action_add_folder
 string action_change_root
 string action_copy
 string action_cut
@@ -3739,12 +3740,15 @@ string cancel
 string character_counter_content_description
 string character_counter_overflowed_content_description
 string character_counter_pattern
+string choose_folder
 string clear_text_end_icon_content_description
 string confirm
 string confirm_delete
 string empty_folder
 string error_a11y_label
+string error_folder_access_lost
 string error_icon_content_description
+string error_permission_not_persisted
 string exposed_dropdown_menu_content_description
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior

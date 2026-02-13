@@ -5,6 +5,7 @@
     <color name="selected">#DDE7FF</color>
     <color name="surface">#FAFAFA</color>
     <color name="surface_dark">#121212</color>
+    <string name="action_add_folder">Add folder…</string>
     <string name="action_change_root">Change root</string>
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
@@ -16,9 +17,12 @@
     <string name="action_select_all">Select all</string>
     <string name="app_name">PhoneMan</string>
     <string name="cancel">Cancel</string>
+    <string name="choose_folder">Open folder</string>
     <string name="confirm">Confirm</string>
     <string name="confirm_delete">Delete selected items?</string>
     <string name="empty_folder">This folder is empty.</string>
+    <string name="error_folder_access_lost">Folder access expired. Please select it again.</string>
+    <string name="error_permission_not_persisted">Access granted, but could not persist this folder permission.</string>
     <string name="new_folder_title">New folder</string>
     <string name="path_unknown">Storage</string>
     <string name="rename_title">Rename</string>

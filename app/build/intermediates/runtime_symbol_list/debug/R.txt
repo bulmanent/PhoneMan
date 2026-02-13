@@ -3709,6 +3709,7 @@ int string abc_searchview_description_voice 0x7f0f0017
 int string abc_shareactionprovider_share_with 0x7f0f0018
 int string abc_shareactionprovider_share_with_application 0x7f0f0019
 int string abc_toolbar_collapse_description 0x7f0f001a
+int string action_add_folder 0x7f0f00b7
 int string action_change_root 0x7f0f001b
 int string action_copy 0x7f0f001c
 int string action_cut 0x7f0f001d
@@ -3738,12 +3739,15 @@ int string cancel 0x7f0f0034
 int string character_counter_content_description 0x7f0f0035
 int string character_counter_overflowed_content_description 0x7f0f0036
 int string character_counter_pattern 0x7f0f0037
+int string choose_folder 0x7f0f00b8
 int string clear_text_end_icon_content_description 0x7f0f0038
 int string confirm 0x7f0f0039
 int string confirm_delete 0x7f0f003a
 int string empty_folder 0x7f0f003b
 int string error_a11y_label 0x7f0f003c
+int string error_folder_access_lost 0x7f0f00b9
 int string error_icon_content_description 0x7f0f003d
+int string error_permission_not_persisted 0x7f0f00ba
 int string exposed_dropdown_menu_content_description 0x7f0f003e
 int string fab_transformation_scrim_behavior 0x7f0f003f
 int string fab_transformation_sheet_behavior 0x7f0f0040
