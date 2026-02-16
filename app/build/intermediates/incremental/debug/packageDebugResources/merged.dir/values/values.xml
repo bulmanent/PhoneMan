@@ -38,6 +38,7 @@
     <string name="new_folder_title">New folder</string>
     <string name="path_unknown">Storage</string>
     <string name="rename_title">Rename</string>
+    <string name="selection_count">Selected: %1$d of %2$d</string>
     <string name="transfer_already_running">Another file operation is already running.</string>
     <string name="transfer_bytes_progress">%1$s / %2$s</string>
     <string name="transfer_calculating">Preparing transfer…</string>

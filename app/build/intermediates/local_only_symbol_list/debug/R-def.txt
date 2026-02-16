@@ -65,6 +65,7 @@ string location_pictures
 string new_folder_title
 string path_unknown
 string rename_title
+string selection_count
 string transfer_already_running
 string transfer_bytes_progress
 string transfer_calculating

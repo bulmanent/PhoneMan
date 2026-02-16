@@ -494,6 +494,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             adapter.clearSelection()
+            binding.selectionStatus.visibility = View.GONE
             actionMode = null
         }
     }
@@ -501,7 +502,10 @@ class MainActivity : AppCompatActivity() {
     private fun updateActionModeTitle() {
         val selectedCount = adapter.getSelectedCount()
         val totalCount = adapter.itemCount
-        actionMode?.title = getString(R.string.selection_count, selectedCount, totalCount)
+        val statusText = getString(R.string.selection_count, selectedCount, totalCount)
+        actionMode?.title = statusText
+        binding.selectionStatus.text = statusText
+        binding.selectionStatus.visibility = if (actionMode != null) View.VISIBLE else View.GONE
     }
 
     private fun confirmDelete(files: List<DocumentFile>) {
