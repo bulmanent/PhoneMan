@@ -20,4 +20,25 @@
     <string name="error_permission_not_persisted">Access granted, but could not persist this folder permission.</string>
     <string name="error_folder_access_lost">Folder access expired. Please select it again.</string>
     <string name="path_unknown">Storage</string>
+    <string name="transfer_copying">Copying files…</string>
+    <string name="transfer_moving">Moving files…</string>
+    <string name="transfer_deleting">Deleting files…</string>
+    <string name="transfer_calculating">Preparing transfer…</string>
+    <string name="transfer_scanning">Calculating size…</string>
+    <string name="transfer_file_progress">%1$d / %2$d files</string>
+    <string name="transfer_bytes_progress">%1$s / %2$s</string>
+    <string name="transfer_current_file">Current: %1$s</string>
+    <string name="transfer_copy_complete">Copy complete</string>
+    <string name="transfer_move_complete">Move complete</string>
+    <string name="transfer_delete_complete">Delete complete</string>
+    <string name="transfer_failed_with_count">%1$d files failed to transfer.</string>
+    <string name="transfer_delete_failed_with_count">%1$d items failed to delete.</string>
+    <string name="transfer_cut_delete_failed_with_count">%1$d source items could not be removed after move.</string>
+    <string name="transfer_already_running">Another file operation is already running.</string>
+    <string name="transfer_notification_channel_name">File transfers</string>
+    <string name="transfer_notification_channel_description">Progress for copy, move, and delete operations</string>
+    <string name="transfer_notification_progress">%1$d/%2$d files • %3$s/%4$s</string>
+    <string name="transfer_notification_progress_files_only">%1$d/%2$d files</string>
+    <string name="transfer_notification_complete">Transfer complete</string>
+    <string name="transfer_notification_failed">Transfer completed with errors</string>
 </resources>
