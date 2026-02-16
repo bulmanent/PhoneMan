@@ -12,6 +12,7 @@
     <string name="action_delete">Delete</string>
     <string name="action_rename">Rename</string>
     <string name="action_select_all">Select all</string>
+    <string name="selection_count">Selected: %1$d of %2$d</string>
     <string name="empty_folder">This folder is empty.</string>
     <string name="confirm_delete">Delete selected items?</string>
     <string name="confirm">Confirm</string>

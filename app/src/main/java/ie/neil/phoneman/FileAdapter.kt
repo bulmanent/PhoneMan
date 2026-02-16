@@ -26,6 +26,10 @@ class FileAdapter(
         return items.filter { selected.contains(it.file.uri.toString()) }
     }
 
+    fun getSelectedCount(): Int {
+        return getSelected().size
+    }
+
     fun toggleSelection(item: FileItem) {
         val key = item.file.uri.toString()
         if (selected.contains(key)) selected.remove(key) else selected.add(key)

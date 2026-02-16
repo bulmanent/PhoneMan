@@ -499,7 +499,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateActionModeTitle() {
-        actionMode?.title = "${adapter.getSelected().size} selected"
+        val selectedCount = adapter.getSelectedCount()
+        val totalCount = adapter.itemCount
+        actionMode?.title = getString(R.string.selection_count, selectedCount, totalCount)
     }
 
     private fun confirmDelete(files: List<DocumentFile>) {

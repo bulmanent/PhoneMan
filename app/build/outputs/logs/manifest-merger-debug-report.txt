@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-26:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-26:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-26:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-26:12
 MERGED from [androidx.databinding:viewbinding:8.2.2] /home/neil/.gradle/caches/transforms-3/d64262d30dfd028fefb0db007e75e64f/transformed/viewbinding-8.2.2/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/neil/.gradle/caches/transforms-3/b7a69d99d1234a5ae0b102688a8b4ebe/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:2:1-7:12
@@ -54,17 +54,25 @@ MERGED from [androidx.print:print:1.0.0] /home/neil/.gradle/caches/transforms-3/
 		INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
+	xmlns:tools
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:2:5-51
 	android:versionCode
 		INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:11-69
 uses-permission#android.permission.POST_NOTIFICATIONS
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:5-77
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:4:5-77
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:22-74
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:4:22-74
+uses-permission#android.permission.MANAGE_EXTERNAL_STORAGE
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:5-7:40
+	tools:ignore
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:7:9-37
+	android:name
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:6:9-66
 application
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:5-20:19
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:5-20:19
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:9:5-24:19
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:9:5-24:19
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/neil/.gradle/caches/transforms-3/413ce96def55d7f8b47d00364302c96f/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
@@ -86,33 +94,33 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/neil/.gradle/caches/t
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:10:9-35
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:9-35
 	android:label
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:8:9-41
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:12:9-41
 	android:roundIcon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:9:9-50
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:9-50
 	android:icon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:7:9-45
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:11:9-45
 	android:allowBackup
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:6:9-35
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:10:9-35
 	android:theme
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:11:9-46
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:9-46
 activity#ie.neil.phoneman.MainActivity
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:12:9-19:20
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:9-23:20
 	android:exported
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:13-36
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:18:13-36
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:13-41
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:17:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:13-18:29
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:19:13-22:29
 action#android.intent.action.MAIN
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:17-69
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:20:17-69
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:25-66
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:20:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:17:17-77
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:21:17-77
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:17:27-74
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:21:27-74
 uses-sdk
 INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
