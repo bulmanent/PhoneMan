@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
 import androidx.viewbinding.ViewBindings;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import ie.neil.phoneman.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
@@ -33,14 +34,27 @@ public final class ActivityMainBinding implements ViewBinding {
   @NonNull
   public final MaterialToolbar toolbar;
 
+  @NonNull
+  public final LinearLayout transferContainer;
+
+  @NonNull
+  public final LinearProgressIndicator transferProgress;
+
+  @NonNull
+  public final TextView transferStatus;
+
   private ActivityMainBinding(@NonNull LinearLayout rootView, @NonNull TextView emptyState,
-      @NonNull RecyclerView fileList, @NonNull TextView pathText,
-      @NonNull MaterialToolbar toolbar) {
+      @NonNull RecyclerView fileList, @NonNull TextView pathText, @NonNull MaterialToolbar toolbar,
+      @NonNull LinearLayout transferContainer, @NonNull LinearProgressIndicator transferProgress,
+      @NonNull TextView transferStatus) {
     this.rootView = rootView;
     this.emptyState = emptyState;
     this.fileList = fileList;
     this.pathText = pathText;
     this.toolbar = toolbar;
+    this.transferContainer = transferContainer;
+    this.transferProgress = transferProgress;
+    this.transferStatus = transferStatus;
   }
 
   @Override
@@ -94,8 +108,26 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.transferContainer;
+      LinearLayout transferContainer = ViewBindings.findChildViewById(rootView, id);
+      if (transferContainer == null) {
+        break missingId;
+      }
+
+      id = R.id.transferProgress;
+      LinearProgressIndicator transferProgress = ViewBindings.findChildViewById(rootView, id);
+      if (transferProgress == null) {
+        break missingId;
+      }
+
+      id = R.id.transferStatus;
+      TextView transferStatus = ViewBindings.findChildViewById(rootView, id);
+      if (transferStatus == null) {
+        break missingId;
+      }
+
       return new ActivityMainBinding((LinearLayout) rootView, emptyState, fileList, pathText,
-          toolbar);
+          toolbar, transferContainer, transferProgress, transferStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

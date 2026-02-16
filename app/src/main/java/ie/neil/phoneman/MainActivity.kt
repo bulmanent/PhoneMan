@@ -9,8 +9,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.SystemClock
 import android.provider.DocumentsContract
+import android.provider.Settings
 import android.text.format.Formatter
 import android.view.ActionMode
 import android.view.Menu
@@ -31,6 +33,11 @@ import ie.neil.phoneman.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -65,6 +72,11 @@ class MainActivity : AppCompatActivity() {
         val deletedAfterCutFailures: Int
     )
 
+    private data class LocationOption(
+        val label: String,
+        val action: () -> Unit
+    )
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: FileAdapter
 
@@ -91,6 +103,20 @@ class MainActivity : AppCompatActivity() {
             openRoot(uri)
         }
     }
+
+    private val requestAllFilesAccessLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (hasAllFilesAccess()) {
+                Toast.makeText(this, R.string.full_access_enabled, Toast.LENGTH_SHORT).show()
+                if (dirStack.isEmpty()) {
+                    openDefaultLocalRoot()
+                } else {
+                    showRootChooser()
+                }
+            } else {
+                Toast.makeText(this, R.string.full_access_not_granted, Toast.LENGTH_LONG).show()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,15 +153,20 @@ class MainActivity : AppCompatActivity() {
 
         val stored = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(KEY_ROOT_URI, null)
         val persistedRoots = getPersistedTreeUris()
-        val initialRoot = stored?.let(Uri::parse)?.takeIf { uri ->
-            persistedRoots.any { it == uri }
-        } ?: persistedRoots.firstOrNull()
+        val storedUri = stored?.let(Uri::parse)
+        val initialRoot = when {
+            storedUri == null -> persistedRoots.firstOrNull()
+            storedUri.scheme == "file" -> storedUri
+            persistedRoots.any { it == storedUri } -> storedUri
+            else -> persistedRoots.firstOrNull()
+        }
 
-        if (initialRoot == null) {
-            requestRoot()
-        } else {
-            saveRoot(initialRoot)
+        if (initialRoot != null) {
             openRoot(initialRoot)
+        } else if (hasAllFilesAccess()) {
+            openDefaultLocalRoot()
+        } else {
+            requestRoot()
         }
     }
 
@@ -194,7 +225,7 @@ class MainActivity : AppCompatActivity() {
                 Intent.FLAG_GRANT_WRITE_URI_PERMISSION or
                 Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && initialUri != null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && initialUri?.scheme == "content") {
             intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, initialUri)
         }
         pickRoot.launch(intent)
@@ -209,27 +240,45 @@ class MainActivity : AppCompatActivity() {
 
     private fun showRootChooser() {
         val roots = getPersistedTreeUris()
-        if (roots.isEmpty()) {
-            requestRoot()
+        val options = mutableListOf<LocationOption>()
+
+        roots.forEach { uri ->
+            val label = DocumentFile.fromTreeUri(this, uri)?.name
+                ?: uri.lastPathSegment
+                ?: getString(R.string.path_unknown)
+            options += LocationOption(label) {
+                saveRoot(uri)
+                openRoot(uri)
+            }
+        }
+
+        if (hasAllFilesAccess()) {
+            getCommonLocalRoots().forEach { file ->
+                options += LocationOption(getLocalRootLabel(file)) {
+                    saveRoot(Uri.fromFile(file))
+                    openLocalRoot(file)
+                }
+            }
+        } else {
+            options += LocationOption(getString(R.string.action_enable_full_access)) {
+                requestAllFilesAccess()
+            }
+        }
+
+        options += LocationOption(getString(R.string.action_browse_location)) {
+            // Start from system picker root so users can jump across devices/providers.
+            requestRoot(initialUri = null)
+        }
+
+        if (options.isEmpty()) {
+            requestRoot(initialUri = null)
             return
         }
 
-        val labels = roots.map { uri ->
-            DocumentFile.fromTreeUri(this, uri)?.name
-                ?: uri.lastPathSegment
-                ?: getString(R.string.path_unknown)
-        } + getString(R.string.action_add_folder)
-
         AlertDialog.Builder(this)
-            .setTitle(R.string.choose_folder)
-            .setItems(labels.toTypedArray()) { _, which ->
-                if (which == roots.size) {
-                    requestRoot()
-                } else {
-                    val selected = roots[which]
-                    saveRoot(selected)
-                    openRoot(selected)
-                }
+            .setTitle(R.string.choose_location)
+            .setItems(options.map { it.label }.toTypedArray()) { _, which ->
+                options[which].action.invoke()
             }
             .setNegativeButton(R.string.cancel, null)
             .show()
@@ -244,7 +293,43 @@ class MainActivity : AppCompatActivity() {
             .toList()
     }
 
+    private fun hasAllFilesAccess(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            true
+        }
+    }
+
+    private fun requestAllFilesAccess() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return
+
+        val appIntent = Intent(
+            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+            Uri.parse("package:$packageName")
+        )
+        try {
+            requestAllFilesAccessLauncher.launch(appIntent)
+        } catch (_: Exception) {
+            requestAllFilesAccessLauncher.launch(Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION))
+        }
+    }
+
     private fun openRoot(uri: Uri) {
+        if (uri.scheme == "file") {
+            if (!hasAllFilesAccess()) {
+                requestAllFilesAccess()
+                return
+            }
+            val path = uri.path
+            if (path.isNullOrBlank()) {
+                Toast.makeText(this, R.string.error_folder_access_lost, Toast.LENGTH_SHORT).show()
+                return
+            }
+            openLocalRoot(File(path))
+            return
+        }
+
         rootUri = uri
         val root = DocumentFile.fromTreeUri(this, uri)
         if (root == null || !root.canRead()) {
@@ -255,6 +340,79 @@ class MainActivity : AppCompatActivity() {
         dirStack.clear()
         dirStack.add(root)
         loadCurrent()
+    }
+
+    private fun openLocalRoot(rootFile: File) {
+        if (!hasAllFilesAccess()) {
+            requestAllFilesAccess()
+            return
+        }
+
+        if (!rootFile.exists() || !rootFile.canRead()) {
+            Toast.makeText(this, R.string.error_folder_access_lost, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val uri = Uri.fromFile(rootFile)
+        rootUri = uri
+        saveRoot(uri)
+        dirStack.clear()
+        dirStack.add(DocumentFile.fromFile(rootFile))
+        loadCurrent()
+    }
+
+    private fun openDefaultLocalRoot() {
+        val preferred = getCommonLocalRoots().firstOrNull()
+            ?: Environment.getExternalStorageDirectory()
+        openLocalRoot(preferred)
+    }
+
+    private fun getCommonLocalRoots(): List<File> {
+        val primary = Environment.getExternalStorageDirectory()
+        val candidates = listOf(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES),
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+            primary
+        ).toMutableList()
+
+        val storageRoots = File("/storage").listFiles()
+            ?.filter { candidate ->
+                candidate.isDirectory &&
+                    candidate.canRead() &&
+                    candidate.name != "self" &&
+                    candidate.name != "emulated"
+            }
+            .orEmpty()
+        candidates += storageRoots
+
+        return candidates
+            .filter { it.exists() && it.canRead() }
+            .distinctBy { it.absolutePath }
+    }
+
+    private fun getLocalRootLabel(file: File): String {
+        val downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).absolutePath
+        val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
+        val dcim = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).absolutePath
+        val pictures = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).absolutePath
+        val movies = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES).absolutePath
+        val music = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).absolutePath
+        val primary = Environment.getExternalStorageDirectory().absolutePath
+
+        return when (file.absolutePath) {
+            downloads -> getString(R.string.location_downloads)
+            documents -> getString(R.string.location_documents)
+            dcim -> getString(R.string.location_dcim)
+            pictures -> getString(R.string.location_pictures)
+            movies -> getString(R.string.location_movies)
+            music -> getString(R.string.location_music)
+            primary -> getString(R.string.location_internal_storage)
+            else -> file.name.ifBlank { file.absolutePath }
+        }
     }
 
     private fun openDirectory(dir: DocumentFile) {
@@ -771,8 +929,8 @@ class MainActivity : AppCompatActivity() {
             val type = source.type ?: "application/octet-stream"
             val dest = targetDir.createFile(type, name) ?: return 1
 
-            contentResolver.openInputStream(source.uri)?.use { inp ->
-                contentResolver.openOutputStream(dest.uri)?.use { out ->
+            openInputStream(source)?.use { inp ->
+                openOutputStream(dest)?.use { out ->
                     val buffer = ByteArray(8 * 1024)
                     while (true) {
                         val read = inp.read(buffer)
@@ -793,6 +951,24 @@ class MainActivity : AppCompatActivity() {
         } catch (_: Exception) {
             1
         }
+    }
+
+    private fun openInputStream(file: DocumentFile): InputStream? {
+        val uri = file.uri
+        if (uri.scheme == "file") {
+            val path = uri.path ?: return null
+            return FileInputStream(File(path))
+        }
+        return contentResolver.openInputStream(uri)
+    }
+
+    private fun openOutputStream(file: DocumentFile): OutputStream? {
+        val uri = file.uri
+        if (uri.scheme == "file") {
+            val path = uri.path ?: return null
+            return FileOutputStream(File(path))
+        }
+        return contentResolver.openOutputStream(uri)
     }
 
     private fun showTransferProgress(

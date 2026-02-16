@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-20:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-20:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-20:12
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-20:12
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:1-22:12
 MERGED from [androidx.databinding:viewbinding:8.2.2] /home/neil/.gradle/caches/transforms-3/d64262d30dfd028fefb0db007e75e64f/transformed/viewbinding-8.2.2/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/neil/.gradle/caches/transforms-3/b7a69d99d1234a5ae0b102688a8b4ebe/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:2:1-7:12
@@ -28,12 +28,15 @@ MERGED from [androidx.customview:customview:1.1.0] /home/neil/.gradle/caches/tra
 MERGED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:17:1-30:12
 MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/neil/.gradle/caches/transforms-3/e941b01fde22fdff89b30af19d350aae/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:17:1-23:12
 MERGED from [androidx.savedstate:savedstate:1.2.1] /home/neil/.gradle/caches/transforms-3/dd5bf7646a22a18020a2053e33d32a88/transformed/savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/neil/.gradle/caches/transforms-3/227ad61b71c665872005516612b89a29/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/neil/.gradle/caches/transforms-3/49aac9ab44dfc396f43dd76321bfb186/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:17:1-35:12
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/neil/.gradle/caches/transforms-3/6f1df18294706fe53a074eedd82892a0/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/neil/.gradle/caches/transforms-3/89fae5491a72a7179849c8af2f6df89e/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:2:1-7:12
-MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/neil/.gradle/caches/transforms-3/1eaf684bbe3371433d92e5379ad60a4e/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.4] /home/neil/.gradle/caches/transforms-3/6e2c8617d3b422bb38ede091487771eb/transformed/lifecycle-livedata-core-ktx-2.8.4/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.4] /home/neil/.gradle/caches/transforms-3/22c8867c243abf58da15234259c84fb0/transformed/lifecycle-viewmodel-2.8.4/AndroidManifest.xml:2:1-5:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.4] /home/neil/.gradle/caches/transforms-3/9aacde93552f8748b432a32200f88791/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.4] /home/neil/.gradle/caches/transforms-3/d39dc57b2b69850281a0d81c8ea43341/transformed/lifecycle-runtime-release/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.4] /home/neil/.gradle/caches/transforms-3/64b59d6bc64098fdaf393d3e04ad30db/transformed/lifecycle-livedata-2.8.4/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.4] /home/neil/.gradle/caches/transforms-3/b9ab9f9b6cff38019a7294007f8f52ff/transformed/lifecycle-livedata-core-2.8.4/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.4] /home/neil/.gradle/caches/transforms-3/c97f3fb06d665b823eee56c4e970dc82/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.4] /home/neil/.gradle/caches/transforms-3/1f43eec8990e71d642f1692ab41353e3/transformed/lifecycle-viewmodel-savedstate-2.8.4/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.core:core-ktx:1.13.1] /home/neil/.gradle/caches/transforms-3/b76e5a7dfe7756ead419f7ef145b568e/transformed/core-ktx-1.13.1/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/neil/.gradle/caches/transforms-3/935ca2afead505062205016701139742/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.documentfile:documentfile:1.0.1] /home/neil/.gradle/caches/transforms-3/d9992cfc9c19e46f67733c2e886b4ee8/transformed/documentfile-1.0.1/AndroidManifest.xml:17:1-22:12
@@ -55,9 +58,13 @@ MERGED from [androidx.print:print:1.0.0] /home/neil/.gradle/caches/transforms-3/
 		INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:1:11-69
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:5-77
+	android:name
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:22-74
 application
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:5-18:19
-INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:3:5-18:19
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:5-20:19
+INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:5-20:19
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
 MERGED from [com.google.android.material:material:1.12.0] /home/neil/.gradle/caches/transforms-3/337e34332cf4bec5cb62ffb73e0c3b27/transformed/material-1.12.0/AndroidManifest.xml:22:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.0.1] /home/neil/.gradle/caches/transforms-3/413ce96def55d7f8b47d00364302c96f/transformed/constraintlayout-2.0.1/AndroidManifest.xml:9:5-20
@@ -66,8 +73,8 @@ MERGED from [androidx.emoji2:emoji2:1.3.0] /home/neil/.gradle/caches/transforms-
 MERGED from [androidx.emoji2:emoji2:1.3.0] /home/neil/.gradle/caches/transforms-3/717f9dc071b78a0adec328cdd5ebdb1e/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
 MERGED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/neil/.gradle/caches/transforms-3/53e5439126cfd03d1d0ad7a58a0140ed/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/neil/.gradle/caches/transforms-3/53e5439126cfd03d1d0ad7a58a0140ed/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
 MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/neil/.gradle/caches/transforms-3/e44061604b05eec77adf483bffd85fb0/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
@@ -79,33 +86,33 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/neil/.gradle/caches/t
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:8:9-35
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:10:9-35
 	android:label
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:6:9-41
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:8:9-41
 	android:roundIcon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:7:9-50
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:9:9-50
 	android:icon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:5:9-45
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:7:9-45
 	android:allowBackup
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:4:9-35
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:6:9-35
 	android:theme
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:9:9-46
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:11:9-46
 activity#ie.neil.phoneman.MainActivity
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:10:9-17:20
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:12:9-19:20
 	android:exported
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:12:13-36
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:13-36
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:11:13-41
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:13-16:29
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:13-18:29
 action#android.intent.action.MAIN
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:17-69
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:17-69
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:25-66
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:17-77
+ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:17:17-77
 	android:name
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:27-74
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:17:27-74
 uses-sdk
 INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
@@ -158,18 +165,24 @@ MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/neil/.
 MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] /home/neil/.gradle/caches/transforms-3/e941b01fde22fdff89b30af19d350aae/transformed/customview-poolingcontainer-1.0.0/AndroidManifest.xml:20:5-21:38
 MERGED from [androidx.savedstate:savedstate:1.2.1] /home/neil/.gradle/caches/transforms-3/dd5bf7646a22a18020a2053e33d32a88/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
 MERGED from [androidx.savedstate:savedstate:1.2.1] /home/neil/.gradle/caches/transforms-3/dd5bf7646a22a18020a2053e33d32a88/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/neil/.gradle/caches/transforms-3/227ad61b71c665872005516612b89a29/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/neil/.gradle/caches/transforms-3/227ad61b71c665872005516612b89a29/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/neil/.gradle/caches/transforms-3/49aac9ab44dfc396f43dd76321bfb186/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/neil/.gradle/caches/transforms-3/49aac9ab44dfc396f43dd76321bfb186/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/neil/.gradle/caches/transforms-3/6f1df18294706fe53a074eedd82892a0/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/neil/.gradle/caches/transforms-3/6f1df18294706fe53a074eedd82892a0/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/neil/.gradle/caches/transforms-3/89fae5491a72a7179849c8af2f6df89e/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/neil/.gradle/caches/transforms-3/89fae5491a72a7179849c8af2f6df89e/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/neil/.gradle/caches/transforms-3/1eaf684bbe3371433d92e5379ad60a4e/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/neil/.gradle/caches/transforms-3/1eaf684bbe3371433d92e5379ad60a4e/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.4] /home/neil/.gradle/caches/transforms-3/6e2c8617d3b422bb38ede091487771eb/transformed/lifecycle-livedata-core-ktx-2.8.4/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.4] /home/neil/.gradle/caches/transforms-3/6e2c8617d3b422bb38ede091487771eb/transformed/lifecycle-livedata-core-ktx-2.8.4/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.4] /home/neil/.gradle/caches/transforms-3/22c8867c243abf58da15234259c84fb0/transformed/lifecycle-viewmodel-2.8.4/AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.8.4] /home/neil/.gradle/caches/transforms-3/22c8867c243abf58da15234259c84fb0/transformed/lifecycle-viewmodel-2.8.4/AndroidManifest.xml:4:5-43
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.4] /home/neil/.gradle/caches/transforms-3/9aacde93552f8748b432a32200f88791/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.4] /home/neil/.gradle/caches/transforms-3/9aacde93552f8748b432a32200f88791/transformed/lifecycle-viewmodel-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.4] /home/neil/.gradle/caches/transforms-3/d39dc57b2b69850281a0d81c8ea43341/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.4] /home/neil/.gradle/caches/transforms-3/d39dc57b2b69850281a0d81c8ea43341/transformed/lifecycle-runtime-release/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.4] /home/neil/.gradle/caches/transforms-3/64b59d6bc64098fdaf393d3e04ad30db/transformed/lifecycle-livedata-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.8.4] /home/neil/.gradle/caches/transforms-3/64b59d6bc64098fdaf393d3e04ad30db/transformed/lifecycle-livedata-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.4] /home/neil/.gradle/caches/transforms-3/b9ab9f9b6cff38019a7294007f8f52ff/transformed/lifecycle-livedata-core-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.4] /home/neil/.gradle/caches/transforms-3/b9ab9f9b6cff38019a7294007f8f52ff/transformed/lifecycle-livedata-core-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.4] /home/neil/.gradle/caches/transforms-3/c97f3fb06d665b823eee56c4e970dc82/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.4] /home/neil/.gradle/caches/transforms-3/c97f3fb06d665b823eee56c4e970dc82/transformed/lifecycle-runtime-ktx-release/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.4] /home/neil/.gradle/caches/transforms-3/1f43eec8990e71d642f1692ab41353e3/transformed/lifecycle-viewmodel-savedstate-2.8.4/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.4] /home/neil/.gradle/caches/transforms-3/1f43eec8990e71d642f1692ab41353e3/transformed/lifecycle-viewmodel-savedstate-2.8.4/AndroidManifest.xml:20:5-44
 MERGED from [androidx.core:core-ktx:1.13.1] /home/neil/.gradle/caches/transforms-3/b76e5a7dfe7756ead419f7ef145b568e/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.core:core-ktx:1.13.1] /home/neil/.gradle/caches/transforms-3/b76e5a7dfe7756ead419f7ef145b568e/transformed/core-ktx-1.13.1/AndroidManifest.xml:5:5-44
 MERGED from [androidx.annotation:annotation-experimental:1.4.0] /home/neil/.gradle/caches/transforms-3/935ca2afead505062205016701139742/transformed/annotation-experimental-1.4.0/AndroidManifest.xml:5:5-44
@@ -202,8 +215,8 @@ MERGED from [androidx.print:print:1.0.0] /home/neil/.gradle/caches/transforms-3/
 		INJECTED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml
 provider#androidx.startup.InitializationProvider
 ADDED from [androidx.emoji2:emoji2:1.3.0] /home/neil/.gradle/caches/transforms-3/717f9dc071b78a0adec328cdd5ebdb1e/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
-MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:24:9-32:20
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/neil/.gradle/caches/transforms-3/53e5439126cfd03d1d0ad7a58a0140ed/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
 MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/neil/.gradle/caches/transforms-3/53e5439126cfd03d1d0ad7a58a0140ed/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
 MERGED from [androidx.startup:startup-runtime:1.1.1] /home/neil/.gradle/caches/transforms-3/bd50c3342304ece3fc0f4987dbf8e037/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
@@ -243,11 +256,11 @@ ADDED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d1
 	android:name
 		ADDED from [androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:26:22-94
 meta-data#androidx.lifecycle.ProcessLifecycleInitializer
-ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:29:13-31:52
 	android:value
-		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:31:17-49
 	android:name
-		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/neil/.gradle/caches/transforms-3/f65ecc3788deedbb02a8d14b7a9fa4dd/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.4] /home/neil/.gradle/caches/transforms-3/c5d8c15413f25f071556805fa667245a/transformed/lifecycle-process-2.8.4/AndroidManifest.xml:30:17-78
 meta-data#androidx.profileinstaller.ProfileInstallerInitializer
 ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/neil/.gradle/caches/transforms-3/53e5439126cfd03d1d0ad7a58a0140ed/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
 	android:value
