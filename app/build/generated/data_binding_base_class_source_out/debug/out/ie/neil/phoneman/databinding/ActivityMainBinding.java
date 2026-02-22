@@ -32,6 +32,9 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView pathText;
 
   @NonNull
+  public final TextView selectionStatus;
+
+  @NonNull
   public final MaterialToolbar toolbar;
 
   @NonNull
@@ -44,13 +47,14 @@ public final class ActivityMainBinding implements ViewBinding {
   public final TextView transferStatus;
 
   private ActivityMainBinding(@NonNull LinearLayout rootView, @NonNull TextView emptyState,
-      @NonNull RecyclerView fileList, @NonNull TextView pathText, @NonNull MaterialToolbar toolbar,
-      @NonNull LinearLayout transferContainer, @NonNull LinearProgressIndicator transferProgress,
-      @NonNull TextView transferStatus) {
+      @NonNull RecyclerView fileList, @NonNull TextView pathText, @NonNull TextView selectionStatus,
+      @NonNull MaterialToolbar toolbar, @NonNull LinearLayout transferContainer,
+      @NonNull LinearProgressIndicator transferProgress, @NonNull TextView transferStatus) {
     this.rootView = rootView;
     this.emptyState = emptyState;
     this.fileList = fileList;
     this.pathText = pathText;
+    this.selectionStatus = selectionStatus;
     this.toolbar = toolbar;
     this.transferContainer = transferContainer;
     this.transferProgress = transferProgress;
@@ -102,6 +106,12 @@ public final class ActivityMainBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.selectionStatus;
+      TextView selectionStatus = ViewBindings.findChildViewById(rootView, id);
+      if (selectionStatus == null) {
+        break missingId;
+      }
+
       id = R.id.toolbar;
       MaterialToolbar toolbar = ViewBindings.findChildViewById(rootView, id);
       if (toolbar == null) {
@@ -127,7 +137,7 @@ public final class ActivityMainBinding implements ViewBinding {
       }
 
       return new ActivityMainBinding((LinearLayout) rootView, emptyState, fileList, pathText,
-          toolbar, transferContainer, transferProgress, transferStatus);
+          selectionStatus, toolbar, transferContainer, transferProgress, transferStatus);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

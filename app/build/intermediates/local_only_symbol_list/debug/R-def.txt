@@ -24,6 +24,7 @@ id itemInfo
 id itemName
 id itemRoot
 id pathText
+id selectionStatus
 id toolbar
 id transferContainer
 id transferProgress

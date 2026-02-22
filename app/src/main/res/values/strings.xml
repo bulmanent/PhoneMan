@@ -54,4 +54,10 @@
     <string name="transfer_notification_progress_files_only">%1$d/%2$d files</string>
     <string name="transfer_notification_complete">Transfer complete</string>
     <string name="transfer_notification_failed">Transfer completed with errors</string>
+    <string name="transfer_cancelled">Transfer cancelled</string>
+    <string name="conflict_dialog_title">File already exists</string>
+    <string name="conflict_dialog_message">"%1$s" already exists in this folder.</string>
+    <string name="conflict_dialog_overwrite">Overwrite</string>
+    <string name="conflict_dialog_skip">Skip</string>
+    <string name="conflict_dialog_apply_all">Apply this choice to all remaining conflicts</string>
 </resources>

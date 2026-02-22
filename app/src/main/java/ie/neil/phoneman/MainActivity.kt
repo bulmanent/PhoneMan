@@ -18,6 +18,7 @@ import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,6 +39,8 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.atomic.AtomicReference
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -69,7 +72,23 @@ class MainActivity : AppCompatActivity() {
 
     private data class TransferResult(
         val failedFiles: Int,
-        val deletedAfterCutFailures: Int
+        val deletedAfterCutFailures: Int,
+        val cancelled: Boolean
+    )
+
+    private enum class ConflictAction {
+        OVERWRITE,
+        SKIP
+    }
+
+    private data class ConflictChoice(
+        val action: ConflictAction?,
+        val applyToAll: Boolean
+    )
+
+    private data class TransferControl(
+        var applyConflictActionToAll: ConflictAction? = null,
+        var cancelled: Boolean = false
     )
 
     private data class LocationOption(
@@ -635,12 +654,18 @@ class MainActivity : AppCompatActivity() {
             }
 
             hideTransferProgress()
-            completeTransferNotification(result.failedFiles == 0)
+            completeTransferNotification(result.failedFiles == 0 && !result.cancelled)
 
             transferInProgress = false
             invalidateOptionsMenu()
 
-            if (result.failedFiles == 0) {
+            if (result.cancelled) {
+                Toast.makeText(
+                    this@MainActivity,
+                    R.string.transfer_cancelled,
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (result.failedFiles == 0) {
                 if (isCut) {
                     clipboard.clear()
                     clipboardCut = false
@@ -884,17 +909,19 @@ class MainActivity : AppCompatActivity() {
         onProgressUpdate: () -> Unit
     ): TransferResult {
         var failures = 0
+        val control = TransferControl()
 
         sources.forEach { source ->
+            if (control.cancelled) return@forEach
             failures += if (source.isDirectory) {
-                copyDirectory(source, targetDir, progress, onProgressUpdate)
+                copyDirectory(source, targetDir, progress, onProgressUpdate, control)
             } else {
-                copyFile(source, targetDir, progress, onProgressUpdate)
+                copyFile(source, targetDir, progress, onProgressUpdate, control)
             }
         }
 
         var deleteFailures = 0
-        if (isCut && failures == 0) {
+        if (isCut && failures == 0 && !control.cancelled) {
             sources.forEach { source ->
                 if (!source.delete()) {
                     deleteFailures += 1
@@ -902,23 +929,49 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        return TransferResult(failures, deleteFailures)
+        return TransferResult(failures, deleteFailures, control.cancelled)
     }
 
     private fun copyDirectory(
         source: DocumentFile,
         target: DocumentFile,
         progress: TransferProgress,
-        onProgressUpdate: () -> Unit
+        onProgressUpdate: () -> Unit,
+        control: TransferControl
     ): Int {
-        val newDir = target.createDirectory(source.name ?: "Folder") ?: return countTotals(source).totalFiles
+        if (control.cancelled) return 0
+        val name = source.name ?: "Folder"
+        val existing = target.findFile(name)
+        val newDir = when {
+            existing == null -> target.createDirectory(name) ?: return countTotals(source).totalFiles
+            existing.isDirectory -> existing
+            else -> {
+                when (resolveConflict(existing, source, control)) {
+                    ConflictAction.OVERWRITE -> {
+                        if (!deleteRecursivelyInternal(existing)) {
+                            return countTotals(source).totalFiles
+                        }
+                        target.createDirectory(name) ?: return countTotals(source).totalFiles
+                    }
+                    ConflictAction.SKIP -> {
+                        markSkipped(source, progress, onProgressUpdate)
+                        return 0
+                    }
+                    null -> {
+                        control.cancelled = true
+                        return 0
+                    }
+                }
+            }
+        }
 
         var failures = 0
         source.listFiles().forEach { child ->
+            if (control.cancelled) return@forEach
             failures += if (child.isDirectory) {
-                copyDirectory(child, newDir, progress, onProgressUpdate)
+                copyDirectory(child, newDir, progress, onProgressUpdate, control)
             } else {
-                copyFile(child, newDir, progress, onProgressUpdate)
+                copyFile(child, newDir, progress, onProgressUpdate, control)
             }
         }
         return failures
@@ -928,11 +981,31 @@ class MainActivity : AppCompatActivity() {
         source: DocumentFile,
         targetDir: DocumentFile,
         progress: TransferProgress,
-        onProgressUpdate: () -> Unit
+        onProgressUpdate: () -> Unit,
+        control: TransferControl
     ): Int {
+        if (control.cancelled) return 0
         return try {
             val name = source.name ?: return 1
             val type = source.type ?: "application/octet-stream"
+            val existing = targetDir.findFile(name)
+            if (existing != null) {
+                when (resolveConflict(existing, source, control)) {
+                    ConflictAction.OVERWRITE -> {
+                        if (!deleteRecursivelyInternal(existing)) {
+                            return 1
+                        }
+                    }
+                    ConflictAction.SKIP -> {
+                        markSkipped(source, progress, onProgressUpdate)
+                        return 0
+                    }
+                    null -> {
+                        control.cancelled = true
+                        return 0
+                    }
+                }
+            }
             val dest = targetDir.createFile(type, name) ?: return 1
 
             openInputStream(source)?.use { inp ->
@@ -956,6 +1029,86 @@ class MainActivity : AppCompatActivity() {
             0
         } catch (_: Exception) {
             1
+        }
+    }
+
+    private fun resolveConflict(
+        existing: DocumentFile,
+        source: DocumentFile,
+        control: TransferControl
+    ): ConflictAction? {
+        control.applyConflictActionToAll?.let { return it }
+
+        val choice = showConflictDialogBlocking(existing.name ?: source.name ?: "item")
+        if (choice.applyToAll && choice.action != null) {
+            control.applyConflictActionToAll = choice.action
+        }
+        return choice.action
+    }
+
+    private fun showConflictDialogBlocking(name: String): ConflictChoice {
+        val decision = AtomicReference(ConflictChoice(action = null, applyToAll = false))
+        val latch = CountDownLatch(1)
+
+        runOnUiThread {
+            val applyToAll = CheckBox(this).apply {
+                text = getString(R.string.conflict_dialog_apply_all)
+            }
+
+            AlertDialog.Builder(this)
+                .setTitle(R.string.conflict_dialog_title)
+                .setMessage(getString(R.string.conflict_dialog_message, name))
+                .setView(applyToAll)
+                .setPositiveButton(R.string.conflict_dialog_overwrite) { _, _ ->
+                    decision.set(ConflictChoice(ConflictAction.OVERWRITE, applyToAll.isChecked))
+                    latch.countDown()
+                }
+                .setNegativeButton(R.string.conflict_dialog_skip) { _, _ ->
+                    decision.set(ConflictChoice(ConflictAction.SKIP, applyToAll.isChecked))
+                    latch.countDown()
+                }
+                .setNeutralButton(R.string.cancel) { _, _ ->
+                    decision.set(ConflictChoice(null, false))
+                    latch.countDown()
+                }
+                .setOnCancelListener {
+                    decision.set(ConflictChoice(null, false))
+                    latch.countDown()
+                }
+                .show()
+        }
+
+        latch.await()
+        return decision.get()
+    }
+
+    private fun markSkipped(
+        source: DocumentFile,
+        progress: TransferProgress,
+        onProgressUpdate: () -> Unit
+    ) {
+        val totals = countTotals(source)
+        progress.copiedFiles += totals.totalFiles
+        progress.copiedBytes += totals.totalBytes
+        progress.currentName = source.name ?: ""
+        onProgressUpdate()
+    }
+
+    private fun deleteRecursivelyInternal(file: DocumentFile): Boolean {
+        if (!file.exists()) return true
+
+        if (file.isDirectory) {
+            file.listFiles().forEach { child ->
+                if (!deleteRecursivelyInternal(child)) {
+                    return false
+                }
+            }
+        }
+
+        return try {
+            file.delete()
+        } catch (_: Exception) {
+            false
         }
     }
 
