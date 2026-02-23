@@ -51,6 +51,11 @@ string choose_folder
 string choose_location
 string confirm
 string confirm_delete
+string conflict_dialog_apply_all
+string conflict_dialog_message
+string conflict_dialog_overwrite
+string conflict_dialog_skip
+string conflict_dialog_title
 string empty_folder
 string error_folder_access_lost
 string error_permission_not_persisted
@@ -70,6 +75,7 @@ string selection_count
 string transfer_already_running
 string transfer_bytes_progress
 string transfer_calculating
+string transfer_cancelled
 string transfer_copy_complete
 string transfer_copying
 string transfer_current_file

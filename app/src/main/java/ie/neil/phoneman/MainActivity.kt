@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -88,7 +89,8 @@ class MainActivity : AppCompatActivity() {
 
     private data class TransferControl(
         var applyConflictActionToAll: ConflictAction? = null,
-        var cancelled: Boolean = false
+        var cancelled: Boolean = false,
+        var hadSkips: Boolean = false
     )
 
     private data class LocationOption(
@@ -108,6 +110,7 @@ class MainActivity : AppCompatActivity() {
 
     private var transferInProgress = false
     private var canShowNotifications = false
+    private var previousRequestedOrientation: Int? = null
 
     private val pickRoot = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -589,6 +592,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         transferInProgress = true
+        lockOrientationForTransfer()
         invalidateOptionsMenu()
 
         showTransferProgress(
@@ -602,96 +606,100 @@ class MainActivity : AppCompatActivity() {
         )
 
         lifecycleScope.launch {
-            canShowNotifications = hasNotificationPermission()
+            try {
+                canShowNotifications = hasNotificationPermission()
 
-            val totals = withContext(Dispatchers.IO) {
-                countTotalsForSources(sources)
-            }
+                val totals = withContext(Dispatchers.IO) {
+                    countTotalsForSources(sources)
+                }
 
-            showTransferProgress(
-                copiedFiles = 0,
-                totalFiles = totals.totalFiles,
-                copiedBytes = 0,
-                totalBytes = totals.totalBytes,
-                currentName = "",
-                operationLabel = operationLabel,
-                indeterminate = totals.totalFiles <= 0
-            )
-            updateTransferNotification(0, totals.totalFiles, 0, totals.totalBytes, "", operationLabel)
+                showTransferProgress(
+                    copiedFiles = 0,
+                    totalFiles = totals.totalFiles,
+                    copiedBytes = 0,
+                    totalBytes = totals.totalBytes,
+                    currentName = "",
+                    operationLabel = operationLabel,
+                    indeterminate = totals.totalFiles <= 0
+                )
+                updateTransferNotification(0, totals.totalFiles, 0, totals.totalBytes, "", operationLabel)
 
-            val progress = TransferProgress(
-                totalFiles = totals.totalFiles,
-                totalBytes = totals.totalBytes
-            )
+                val progress = TransferProgress(
+                    totalFiles = totals.totalFiles,
+                    totalBytes = totals.totalBytes
+                )
 
-            var lastProgressUpdateMs = 0L
-            val result = withContext(Dispatchers.IO) {
-                performTransfer(sources, targetDir, isCut, progress) {
-                    val now = SystemClock.elapsedRealtime()
-                    if (now - lastProgressUpdateMs >= PROGRESS_UPDATE_INTERVAL_MS || progress.copiedFiles == progress.totalFiles) {
-                        lastProgressUpdateMs = now
-                        runOnUiThread {
-                            showTransferProgress(
-                                copiedFiles = progress.copiedFiles,
-                                totalFiles = progress.totalFiles,
-                                copiedBytes = progress.copiedBytes,
-                                totalBytes = progress.totalBytes,
-                                currentName = progress.currentName,
-                                operationLabel = operationLabel,
-                                indeterminate = progress.totalFiles <= 0
-                            )
-                            updateTransferNotification(
-                                copiedFiles = progress.copiedFiles,
-                                totalFiles = progress.totalFiles,
-                                copiedBytes = progress.copiedBytes,
-                                totalBytes = progress.totalBytes,
-                                currentName = progress.currentName,
-                                operationLabel = operationLabel
-                            )
+                var lastProgressUpdateMs = 0L
+                val result = withContext(Dispatchers.IO) {
+                    performTransfer(sources, targetDir, isCut, progress) {
+                        val now = SystemClock.elapsedRealtime()
+                        if (now - lastProgressUpdateMs >= PROGRESS_UPDATE_INTERVAL_MS || progress.copiedFiles == progress.totalFiles) {
+                            lastProgressUpdateMs = now
+                            runOnUiThread {
+                                showTransferProgress(
+                                    copiedFiles = progress.copiedFiles,
+                                    totalFiles = progress.totalFiles,
+                                    copiedBytes = progress.copiedBytes,
+                                    totalBytes = progress.totalBytes,
+                                    currentName = progress.currentName,
+                                    operationLabel = operationLabel,
+                                    indeterminate = progress.totalFiles <= 0
+                                )
+                                updateTransferNotification(
+                                    copiedFiles = progress.copiedFiles,
+                                    totalFiles = progress.totalFiles,
+                                    copiedBytes = progress.copiedBytes,
+                                    totalBytes = progress.totalBytes,
+                                    currentName = progress.currentName,
+                                    operationLabel = operationLabel
+                                )
+                            }
                         }
                     }
                 }
-            }
 
-            hideTransferProgress()
-            completeTransferNotification(result.failedFiles == 0 && !result.cancelled)
+                hideTransferProgress()
+                completeTransferNotification(result.failedFiles == 0 && !result.cancelled)
 
-            transferInProgress = false
-            invalidateOptionsMenu()
-
-            if (result.cancelled) {
-                Toast.makeText(
-                    this@MainActivity,
-                    R.string.transfer_cancelled,
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else if (result.failedFiles == 0) {
-                if (isCut) {
-                    clipboard.clear()
-                    clipboardCut = false
+                if (result.cancelled) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        R.string.transfer_cancelled,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (result.failedFiles == 0) {
+                    if (isCut) {
+                        clipboard.clear()
+                        clipboardCut = false
+                    }
+                    Toast.makeText(
+                        this@MainActivity,
+                        if (isCut) R.string.transfer_move_complete else R.string.transfer_copy_complete,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.transfer_failed_with_count, result.failedFiles),
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                Toast.makeText(
-                    this@MainActivity,
-                    if (isCut) R.string.transfer_move_complete else R.string.transfer_copy_complete,
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.transfer_failed_with_count, result.failedFiles),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
 
-            if (result.deletedAfterCutFailures > 0) {
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.transfer_cut_delete_failed_with_count, result.deletedAfterCutFailures),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+                if (result.deletedAfterCutFailures > 0) {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.transfer_cut_delete_failed_with_count, result.deletedAfterCutFailures),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
 
-            loadCurrent()
+                loadCurrent()
+            } finally {
+                hideTransferProgress()
+                transferInProgress = false
+                unlockOrientationForTransfer()
+                invalidateOptionsMenu()
+            }
         }
     }
 
@@ -771,6 +779,7 @@ class MainActivity : AppCompatActivity() {
 
         val operationLabel = getString(R.string.transfer_deleting)
         transferInProgress = true
+        lockOrientationForTransfer()
         invalidateOptionsMenu()
 
         showTransferProgress(
@@ -784,74 +793,78 @@ class MainActivity : AppCompatActivity() {
         )
 
         lifecycleScope.launch {
-            canShowNotifications = hasNotificationPermission()
+            try {
+                canShowNotifications = hasNotificationPermission()
 
-            val totals = withContext(Dispatchers.IO) {
-                countDeleteTotalsForTargets(targets)
-            }
+                val totals = withContext(Dispatchers.IO) {
+                    countDeleteTotalsForTargets(targets)
+                }
 
-            showTransferProgress(
-                copiedFiles = 0,
-                totalFiles = totals.totalItems,
-                copiedBytes = 0,
-                totalBytes = totals.totalBytes,
-                currentName = "",
-                operationLabel = operationLabel,
-                indeterminate = totals.totalItems <= 0
-            )
-            updateTransferNotification(0, totals.totalItems, 0, totals.totalBytes, "", operationLabel)
+                showTransferProgress(
+                    copiedFiles = 0,
+                    totalFiles = totals.totalItems,
+                    copiedBytes = 0,
+                    totalBytes = totals.totalBytes,
+                    currentName = "",
+                    operationLabel = operationLabel,
+                    indeterminate = totals.totalItems <= 0
+                )
+                updateTransferNotification(0, totals.totalItems, 0, totals.totalBytes, "", operationLabel)
 
-            val progress = TransferProgress(
-                totalFiles = totals.totalItems,
-                totalBytes = totals.totalBytes
-            )
+                val progress = TransferProgress(
+                    totalFiles = totals.totalItems,
+                    totalBytes = totals.totalBytes
+                )
 
-            var lastProgressUpdateMs = 0L
-            val failures = withContext(Dispatchers.IO) {
-                performDelete(targets, progress) {
-                    val now = SystemClock.elapsedRealtime()
-                    if (now - lastProgressUpdateMs >= PROGRESS_UPDATE_INTERVAL_MS || progress.copiedFiles == progress.totalFiles) {
-                        lastProgressUpdateMs = now
-                        runOnUiThread {
-                            showTransferProgress(
-                                copiedFiles = progress.copiedFiles,
-                                totalFiles = progress.totalFiles,
-                                copiedBytes = progress.copiedBytes,
-                                totalBytes = progress.totalBytes,
-                                currentName = progress.currentName,
-                                operationLabel = operationLabel,
-                                indeterminate = progress.totalFiles <= 0
-                            )
-                            updateTransferNotification(
-                                copiedFiles = progress.copiedFiles,
-                                totalFiles = progress.totalFiles,
-                                copiedBytes = progress.copiedBytes,
-                                totalBytes = progress.totalBytes,
-                                currentName = progress.currentName,
-                                operationLabel = operationLabel
-                            )
+                var lastProgressUpdateMs = 0L
+                val failures = withContext(Dispatchers.IO) {
+                    performDelete(targets, progress) {
+                        val now = SystemClock.elapsedRealtime()
+                        if (now - lastProgressUpdateMs >= PROGRESS_UPDATE_INTERVAL_MS || progress.copiedFiles == progress.totalFiles) {
+                            lastProgressUpdateMs = now
+                            runOnUiThread {
+                                showTransferProgress(
+                                    copiedFiles = progress.copiedFiles,
+                                    totalFiles = progress.totalFiles,
+                                    copiedBytes = progress.copiedBytes,
+                                    totalBytes = progress.totalBytes,
+                                    currentName = progress.currentName,
+                                    operationLabel = operationLabel,
+                                    indeterminate = progress.totalFiles <= 0
+                                )
+                                updateTransferNotification(
+                                    copiedFiles = progress.copiedFiles,
+                                    totalFiles = progress.totalFiles,
+                                    copiedBytes = progress.copiedBytes,
+                                    totalBytes = progress.totalBytes,
+                                    currentName = progress.currentName,
+                                    operationLabel = operationLabel
+                                )
+                            }
                         }
                     }
                 }
+
+                hideTransferProgress()
+                completeTransferNotification(failures == 0)
+
+                if (failures == 0) {
+                    Toast.makeText(this@MainActivity, R.string.transfer_delete_complete, Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.transfer_delete_failed_with_count, failures),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+                loadCurrent()
+            } finally {
+                hideTransferProgress()
+                transferInProgress = false
+                unlockOrientationForTransfer()
+                invalidateOptionsMenu()
             }
-
-            hideTransferProgress()
-            completeTransferNotification(failures == 0)
-
-            transferInProgress = false
-            invalidateOptionsMenu()
-
-            if (failures == 0) {
-                Toast.makeText(this@MainActivity, R.string.transfer_delete_complete, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(
-                    this@MainActivity,
-                    getString(R.string.transfer_delete_failed_with_count, failures),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-            loadCurrent()
         }
     }
 
@@ -921,7 +934,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         var deleteFailures = 0
-        if (isCut && failures == 0 && !control.cancelled) {
+        if (isCut && failures == 0 && !control.cancelled && !control.hadSkips) {
             sources.forEach { source ->
                 if (!source.delete()) {
                     deleteFailures += 1
@@ -944,7 +957,10 @@ class MainActivity : AppCompatActivity() {
         val existing = target.findFile(name)
         val newDir = when {
             existing == null -> target.createDirectory(name) ?: return countTotals(source).totalFiles
-            existing.isDirectory -> existing
+            isSameDocument(existing, source) -> {
+                markSkipped(source, progress, onProgressUpdate, control)
+                return 0
+            }
             else -> {
                 when (resolveConflict(existing, source, control)) {
                     ConflictAction.OVERWRITE -> {
@@ -954,7 +970,7 @@ class MainActivity : AppCompatActivity() {
                         target.createDirectory(name) ?: return countTotals(source).totalFiles
                     }
                     ConflictAction.SKIP -> {
-                        markSkipped(source, progress, onProgressUpdate)
+                        markSkipped(source, progress, onProgressUpdate, control)
                         return 0
                     }
                     null -> {
@@ -990,6 +1006,10 @@ class MainActivity : AppCompatActivity() {
             val type = source.type ?: "application/octet-stream"
             val existing = targetDir.findFile(name)
             if (existing != null) {
+                if (isSameDocument(existing, source)) {
+                    markSkipped(source, progress, onProgressUpdate, control)
+                    return 0
+                }
                 when (resolveConflict(existing, source, control)) {
                     ConflictAction.OVERWRITE -> {
                         if (!deleteRecursivelyInternal(existing)) {
@@ -997,7 +1017,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     ConflictAction.SKIP -> {
-                        markSkipped(source, progress, onProgressUpdate)
+                        markSkipped(source, progress, onProgressUpdate, control)
                         return 0
                     }
                     null -> {
@@ -1085,13 +1105,39 @@ class MainActivity : AppCompatActivity() {
     private fun markSkipped(
         source: DocumentFile,
         progress: TransferProgress,
-        onProgressUpdate: () -> Unit
+        onProgressUpdate: () -> Unit,
+        control: TransferControl
     ) {
+        control.hadSkips = true
         val totals = countTotals(source)
         progress.copiedFiles += totals.totalFiles
         progress.copiedBytes += totals.totalBytes
         progress.currentName = source.name ?: ""
         onProgressUpdate()
+    }
+
+    private fun isSameDocument(first: DocumentFile, second: DocumentFile): Boolean {
+        if (first.uri == second.uri) return true
+        if (first.uri.scheme == "file" && second.uri.scheme == "file") {
+            val firstPath = first.uri.path
+            val secondPath = second.uri.path
+            if (firstPath != null && secondPath != null) {
+                return File(firstPath).absolutePath == File(secondPath).absolutePath
+            }
+        }
+        return false
+    }
+
+    private fun lockOrientationForTransfer() {
+        if (previousRequestedOrientation != null) return
+        previousRequestedOrientation = requestedOrientation
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+    }
+
+    private fun unlockOrientationForTransfer() {
+        val previous = previousRequestedOrientation ?: return
+        requestedOrientation = previous
+        previousRequestedOrientation = null
     }
 
     private fun deleteRecursivelyInternal(file: DocumentFile): Boolean {

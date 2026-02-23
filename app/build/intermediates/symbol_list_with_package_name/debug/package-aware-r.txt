@@ -3751,6 +3751,11 @@ string choose_location
 string clear_text_end_icon_content_description
 string confirm
 string confirm_delete
+string conflict_dialog_apply_all
+string conflict_dialog_message
+string conflict_dialog_overwrite
+string conflict_dialog_skip
+string conflict_dialog_title
 string empty_folder
 string error_a11y_label
 string error_folder_access_lost
@@ -3890,6 +3895,7 @@ string status_bar_notification_info_overflow
 string transfer_already_running
 string transfer_bytes_progress
 string transfer_calculating
+string transfer_cancelled
 string transfer_copy_complete
 string transfer_copying
 string transfer_current_file

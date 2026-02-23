@@ -3750,6 +3750,11 @@ int string choose_location 0x7f0f00d2
 int string clear_text_end_icon_content_description 0x7f0f0038
 int string confirm 0x7f0f0039
 int string confirm_delete 0x7f0f003a
+int string conflict_dialog_apply_all 0x7f0f00dd
+int string conflict_dialog_message 0x7f0f00de
+int string conflict_dialog_overwrite 0x7f0f00df
+int string conflict_dialog_skip 0x7f0f00e0
+int string conflict_dialog_title 0x7f0f00e1
 int string empty_folder 0x7f0f003b
 int string error_a11y_label 0x7f0f003c
 int string error_folder_access_lost 0x7f0f00b9
@@ -3889,6 +3894,7 @@ int string status_bar_notification_info_overflow 0x7f0f00b6
 int string transfer_already_running 0x7f0f00bb
 int string transfer_bytes_progress 0x7f0f00bc
 int string transfer_calculating 0x7f0f00bd
+int string transfer_cancelled 0x7f0f00e2
 int string transfer_copy_complete 0x7f0f00be
 int string transfer_copying 0x7f0f00bf
 int string transfer_current_file 0x7f0f00c0
