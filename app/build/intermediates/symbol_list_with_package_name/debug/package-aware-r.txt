@@ -3918,6 +3918,7 @@ string transfer_notification_complete
 string transfer_notification_failed
 string transfer_notification_progress
 string transfer_notification_progress_files_only
+string transfer_notification_running
 string transfer_scanning
 string transfer_tap_to_cancel
 style AlertDialog_AppCompat

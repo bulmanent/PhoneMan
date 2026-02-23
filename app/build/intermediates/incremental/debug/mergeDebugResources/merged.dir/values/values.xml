@@ -2114,6 +2114,7 @@
     <string name="transfer_notification_failed">Transfer completed with errors</string>
     <string name="transfer_notification_progress">%1$d/%2$d files • %3$s/%4$s</string>
     <string name="transfer_notification_progress_files_only">%1$d/%2$d files</string>
+    <string name="transfer_notification_running">Transfer in progress</string>
     <string name="transfer_scanning">Calculating size…</string>
     <string name="transfer_tap_to_cancel">Tap this progress panel to cancel.</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>

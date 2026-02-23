@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity() {
         val totalBytes: Long,
         var copiedFiles: Int = 0,
         var copiedBytes: Long = 0,
-        var currentName: String = ""
+        var currentName: String = "",
+        var operationLabel: String = ""
     )
 
     private data class TransferResult(
@@ -690,6 +691,11 @@ class MainActivity : AppCompatActivity() {
             operationLabel = operationLabel,
             indeterminate = true
         )
+        TransferForegroundService.start(
+            this,
+            operationLabel,
+            getString(R.string.transfer_notification_running)
+        )
 
         lifecycleScope.launch {
             try {
@@ -712,7 +718,8 @@ class MainActivity : AppCompatActivity() {
 
                 val progress = TransferProgress(
                     totalFiles = totals.totalFiles,
-                    totalBytes = totals.totalBytes
+                    totalBytes = totals.totalBytes,
+                    operationLabel = operationLabel
                 )
 
                 var lastProgressUpdateMs = 0L
@@ -783,6 +790,7 @@ class MainActivity : AppCompatActivity() {
             } finally {
                 hideTransferProgress()
                 transferInProgress = false
+                TransferForegroundService.stop(this@MainActivity)
                 unlockOrientationForTransfer()
                 invalidateOptionsMenu()
             }
@@ -878,6 +886,11 @@ class MainActivity : AppCompatActivity() {
             operationLabel = operationLabel,
             indeterminate = true
         )
+        TransferForegroundService.start(
+            this,
+            operationLabel,
+            getString(R.string.transfer_notification_running)
+        )
 
         lifecycleScope.launch {
             try {
@@ -900,7 +913,8 @@ class MainActivity : AppCompatActivity() {
 
                 val progress = TransferProgress(
                     totalFiles = totals.totalItems,
-                    totalBytes = totals.totalBytes
+                    totalBytes = totals.totalBytes,
+                    operationLabel = operationLabel
                 )
 
                 var lastProgressUpdateMs = 0L
@@ -951,6 +965,7 @@ class MainActivity : AppCompatActivity() {
             } finally {
                 hideTransferProgress()
                 transferInProgress = false
+                TransferForegroundService.stop(this@MainActivity)
                 unlockOrientationForTransfer()
                 invalidateOptionsMenu()
             }
@@ -1097,6 +1112,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val existingChildrenByName = buildChildrenNameIndex(newDir)
         var failures = 0
         source.listFiles().forEach { child ->
             if (transferCancelRequested) {
@@ -1106,7 +1122,16 @@ class MainActivity : AppCompatActivity() {
             failures += if (child.isDirectory) {
                 copyDirectory(child, newDir, progress, onProgressUpdate, control)
             } else {
-                copyFile(child, newDir, progress, onProgressUpdate, control)
+                val existingFile = existingChildrenByName[normalizeDocumentName(child.name ?: "")]
+                copyFile(
+                    source = child,
+                    targetDir = newDir,
+                    progress = progress,
+                    onProgressUpdate = onProgressUpdate,
+                    control = control,
+                    existingOverride = existingFile,
+                    destinationIndex = existingChildrenByName
+                )
             }
         }
         return failures
@@ -1117,7 +1142,9 @@ class MainActivity : AppCompatActivity() {
         targetDir: DocumentFile,
         progress: TransferProgress,
         onProgressUpdate: () -> Unit,
-        control: TransferControl
+        control: TransferControl,
+        existingOverride: DocumentFile? = null,
+        destinationIndex: MutableMap<String, DocumentFile>? = null
     ): Int {
         if (control.cancelled || transferCancelRequested) {
             control.cancelled = true
@@ -1126,7 +1153,7 @@ class MainActivity : AppCompatActivity() {
         return try {
             val name = source.name ?: return 1
             val type = source.type ?: "application/octet-stream"
-            val existing = findChildByName(targetDir, name)
+            val existing = existingOverride ?: findChildByName(targetDir, name)
             if (existing != null) {
                 if (isSameDocument(existing, source)) {
                     markSkipped(source, progress, onProgressUpdate, control)
@@ -1149,6 +1176,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             val dest = targetDir.createFile(type, name) ?: return 1
+            destinationIndex?.set(normalizeDocumentName(name), dest)
 
             openInputStream(source)?.use { inp ->
                 openOutputStream(dest)?.use { out ->
@@ -1157,6 +1185,7 @@ class MainActivity : AppCompatActivity() {
                         if (transferCancelRequested) {
                             control.cancelled = true
                             deleteRecursivelyInternal(dest)
+                            destinationIndex?.remove(normalizeDocumentName(name))
                             return 0
                         }
                         val read = inp.read(buffer)
@@ -1276,6 +1305,15 @@ class MainActivity : AppCompatActivity() {
 
     private fun normalizeDocumentName(name: String): String {
         return Normalizer.normalize(name.trim(), Normalizer.Form.NFKC).lowercase()
+    }
+
+    private fun buildChildrenNameIndex(targetDir: DocumentFile): MutableMap<String, DocumentFile> {
+        val result = mutableMapOf<String, DocumentFile>()
+        targetDir.listFiles().forEach { child ->
+            val childName = child.name ?: return@forEach
+            result[normalizeDocumentName(childName)] = child
+        }
+        return result
     }
 
     private fun isSameDocument(first: DocumentFile, second: DocumentFile): Boolean {
@@ -1421,6 +1459,32 @@ class MainActivity : AppCompatActivity() {
         currentName: String,
         operationLabel: String
     ) {
+        val indeterminate = totalBytes <= 0 && totalFiles <= 0
+        val percent = when {
+            totalBytes > 0 -> ((copiedBytes * 100) / totalBytes).toInt().coerceIn(0, 100)
+            totalFiles > 0 -> ((copiedFiles * 100) / totalFiles).coerceIn(0, 100)
+            else -> 0
+        }
+        val progressText = if (totalBytes > 0) {
+            getString(
+                R.string.transfer_notification_progress,
+                copiedFiles,
+                totalFiles,
+                Formatter.formatShortFileSize(this, copiedBytes),
+                Formatter.formatShortFileSize(this, totalBytes)
+            )
+        } else {
+            getString(R.string.transfer_notification_progress_files_only, copiedFiles, totalFiles)
+        }
+
+        TransferForegroundService.update(
+            context = this,
+            title = operationLabel,
+            text = progressText,
+            percent = percent,
+            indeterminate = indeterminate
+        )
+
         if (!canShowNotifications) return
 
         val builder = NotificationCompat.Builder(this, TRANSFER_NOTIFICATION_CHANNEL_ID)
@@ -1429,30 +1493,8 @@ class MainActivity : AppCompatActivity() {
             .setOnlyAlertOnce(true)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
-
-        if (totalBytes > 0) {
-            val percent = ((copiedBytes * 100) / totalBytes).toInt().coerceIn(0, 100)
-            builder
-                .setContentText(
-                    getString(
-                        R.string.transfer_notification_progress,
-                        copiedFiles,
-                        totalFiles,
-                        Formatter.formatShortFileSize(this, copiedBytes),
-                        Formatter.formatShortFileSize(this, totalBytes)
-                    )
-                )
-                .setProgress(100, percent, false)
-        } else if (totalFiles > 0) {
-            val percent = ((copiedFiles * 100) / totalFiles).coerceIn(0, 100)
-            builder
-                .setContentText(getString(R.string.transfer_notification_progress_files_only, copiedFiles, totalFiles))
-                .setProgress(100, percent, false)
-        } else {
-            builder
-                .setContentText(getString(R.string.transfer_notification_progress_files_only, copiedFiles, totalFiles))
-                .setProgress(0, 0, true)
-        }
+            .setContentText(progressText)
+            .setProgress(100, percent, indeterminate)
 
         if (currentName.isNotBlank()) {
             builder.setSubText(currentName)

@@ -3917,8 +3917,9 @@ int string transfer_notification_complete 0x7f0f00e3
 int string transfer_notification_failed 0x7f0f00e4
 int string transfer_notification_progress 0x7f0f00e5
 int string transfer_notification_progress_files_only 0x7f0f00e6
-int string transfer_scanning 0x7f0f00e7
-int string transfer_tap_to_cancel 0x7f0f00e8
+int string transfer_notification_running 0x7f0f00e7
+int string transfer_scanning 0x7f0f00e8
+int string transfer_tap_to_cancel 0x7f0f00e9
 int style AlertDialog_AppCompat 0x7f100000
 int style AlertDialog_AppCompat_Light 0x7f100001
 int style Animation_AppCompat_Dialog 0x7f100002
