@@ -42,6 +42,7 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
+import java.text.Normalizer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
 
@@ -1243,14 +1244,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun findChildByName(targetDir: DocumentFile, name: String): DocumentFile? {
+        val targetUri = targetDir.uri
+        if (targetUri.scheme == "file") {
+            val parentPath = targetUri.path
+            if (!parentPath.isNullOrBlank()) {
+                val parent = File(parentPath)
+                val direct = File(parent, name)
+                if (direct.exists()) {
+                    return DocumentFile.fromFile(direct)
+                }
+                val normalizedTarget = normalizeDocumentName(name)
+                val normalizedMatch = parent.listFiles()?.firstOrNull { child ->
+                    normalizeDocumentName(child.name) == normalizedTarget
+                }
+                if (normalizedMatch != null) {
+                    return DocumentFile.fromFile(normalizedMatch)
+                }
+            }
+        }
+
         val direct = targetDir.findFile(name)
         if (direct != null) return direct
 
+        val normalizedTarget = normalizeDocumentName(name)
         // Some providers are inconsistent with findFile; fall back to a full child scan.
         return targetDir.listFiles().firstOrNull { child ->
             val childName = child.name ?: return@firstOrNull false
-            childName == name
+            normalizeDocumentName(childName) == normalizedTarget
         }
+    }
+
+    private fun normalizeDocumentName(name: String): String {
+        return Normalizer.normalize(name.trim(), Normalizer.Form.NFKC).lowercase()
     }
 
     private fun isSameDocument(first: DocumentFile, second: DocumentFile): Boolean {
