@@ -1058,29 +1058,39 @@ class MainActivity : AppCompatActivity() {
             return 0
         }
         val name = source.name ?: "Folder"
-        val existing = findChildByName(target, name)
-        val newDir = when {
-            existing == null -> target.createDirectory(name) ?: return countTotals(source).totalFiles
-            isSameDocument(existing, source) -> {
-                markSkipped(source, progress, onProgressUpdate, control)
-                return 0
-            }
-            existing.isDirectory -> existing
-            else -> {
-                when (resolveConflict(existing, source, control)) {
-                    ConflictAction.OVERWRITE -> {
-                        if (!deleteRecursivelyInternal(existing)) {
-                            return countTotals(source).totalFiles
+        val mergeIntoCurrentDir =
+            target.isDirectory &&
+                target.name != null &&
+                target.name == name &&
+                !isSameDocument(target, source)
+
+        val newDir = if (mergeIntoCurrentDir) {
+            target
+        } else {
+            val existing = findChildByName(target, name)
+            when {
+                existing == null -> target.createDirectory(name) ?: return countTotals(source).totalFiles
+                isSameDocument(existing, source) -> {
+                    markSkipped(source, progress, onProgressUpdate, control)
+                    return 0
+                }
+                existing.isDirectory -> existing
+                else -> {
+                    when (resolveConflict(existing, source, control)) {
+                        ConflictAction.OVERWRITE -> {
+                            if (!deleteRecursivelyInternal(existing)) {
+                                return countTotals(source).totalFiles
+                            }
+                            target.createDirectory(name) ?: return countTotals(source).totalFiles
                         }
-                        target.createDirectory(name) ?: return countTotals(source).totalFiles
-                    }
-                    ConflictAction.SKIP -> {
-                        markSkipped(source, progress, onProgressUpdate, control)
-                        return 0
-                    }
-                    null -> {
-                        control.cancelled = true
-                        return 0
+                        ConflictAction.SKIP -> {
+                            markSkipped(source, progress, onProgressUpdate, control)
+                            return 0
+                        }
+                        null -> {
+                            control.cancelled = true
+                            return 0
+                        }
                     }
                 }
             }
