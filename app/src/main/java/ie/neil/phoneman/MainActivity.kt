@@ -80,6 +80,11 @@ class MainActivity : AppCompatActivity() {
         val cancelled: Boolean
     )
 
+    private data class DeleteResult(
+        val failures: Int,
+        val cancelled: Boolean
+    )
+
     private enum class ConflictAction {
         OVERWRITE,
         SKIP
@@ -114,6 +119,8 @@ class MainActivity : AppCompatActivity() {
     private var transferInProgress = false
     private var canShowNotifications = false
     private var previousRequestedOrientation: Int? = null
+    @Volatile
+    private var transferCancelRequested = false
     private var folderLoadJob: Job? = null
     private var folderLoadHintJob: Job? = null
     private var folderLoadRequestId = 0L
@@ -184,6 +191,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.fileList.layoutManager = LinearLayoutManager(this)
         binding.fileList.adapter = adapter
+        binding.emptyState.setOnClickListener {
+            if (folderLoadJob?.isActive == true) {
+                cancelFolderLoad()
+            }
+        }
+        binding.transferContainer.setOnClickListener {
+            if (transferInProgress && !transferCancelRequested) {
+                transferCancelRequested = true
+                Toast.makeText(this, R.string.transfer_cancelling, Toast.LENGTH_SHORT).show()
+            }
+        }
 
         val stored = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(KEY_ROOT_URI, null)
         val persistedRoots = getPersistedTreeUris()
@@ -491,6 +509,7 @@ class MainActivity : AppCompatActivity() {
             folderLoadHintJob?.cancel()
             adapter.submitList(children)
             binding.emptyState.text = getString(R.string.empty_folder)
+            binding.emptyState.isClickable = false
             binding.emptyState.visibility = if (children.isEmpty()) View.VISIBLE else View.GONE
             invalidateOptionsMenu()
         }
@@ -498,8 +517,28 @@ class MainActivity : AppCompatActivity() {
 
     private fun showFolderLoadingState() {
         adapter.submitList(emptyList())
-        binding.emptyState.text = getString(R.string.loading_folder)
+        binding.emptyState.text = getString(R.string.loading_folder_tap_cancel)
+        binding.emptyState.isClickable = true
         binding.emptyState.visibility = View.VISIBLE
+    }
+
+    private fun cancelFolderLoad() {
+        if (folderLoadJob?.isActive != true) return
+        folderLoadRequestId += 1
+        folderLoadJob?.cancel()
+        folderLoadHintJob?.cancel()
+
+        if (dirStack.size > 1) {
+            dirStack.removeLast()
+            loadCurrent()
+        } else {
+            adapter.submitList(emptyList())
+            binding.emptyState.text = getString(R.string.folder_loading_cancelled)
+            binding.emptyState.isClickable = false
+            binding.emptyState.visibility = View.VISIBLE
+            invalidateOptionsMenu()
+        }
+        Toast.makeText(this, R.string.folder_loading_cancelled_toast, Toast.LENGTH_SHORT).show()
     }
 
     private fun buildPath(): String {
@@ -635,6 +674,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             getString(R.string.transfer_copying)
         }
+        transferCancelRequested = false
 
         transferInProgress = true
         lockOrientationForTransfer()
@@ -823,6 +863,7 @@ class MainActivity : AppCompatActivity() {
         if (targets.isEmpty()) return
 
         val operationLabel = getString(R.string.transfer_deleting)
+        transferCancelRequested = false
         transferInProgress = true
         lockOrientationForTransfer()
         invalidateOptionsMenu()
@@ -862,7 +903,7 @@ class MainActivity : AppCompatActivity() {
                 )
 
                 var lastProgressUpdateMs = 0L
-                val failures = withContext(Dispatchers.IO) {
+                val result = withContext(Dispatchers.IO) {
                     performDelete(targets, progress) {
                         val now = SystemClock.elapsedRealtime()
                         if (now - lastProgressUpdateMs >= PROGRESS_UPDATE_INTERVAL_MS || progress.copiedFiles == progress.totalFiles) {
@@ -891,14 +932,16 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 hideTransferProgress()
-                completeTransferNotification(failures == 0)
+                completeTransferNotification(result.failures == 0 && !result.cancelled)
 
-                if (failures == 0) {
+                if (result.cancelled) {
+                    Toast.makeText(this@MainActivity, R.string.transfer_cancelled, Toast.LENGTH_SHORT).show()
+                } else if (result.failures == 0) {
                     Toast.makeText(this@MainActivity, R.string.transfer_delete_complete, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(
                         this@MainActivity,
-                        getString(R.string.transfer_delete_failed_with_count, failures),
+                        getString(R.string.transfer_delete_failed_with_count, result.failures),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -917,12 +960,13 @@ class MainActivity : AppCompatActivity() {
         targets: List<DocumentFile>,
         progress: TransferProgress,
         onProgressUpdate: () -> Unit
-    ): Int {
+    ): DeleteResult {
         var failures = 0
         targets.forEach { target ->
+            if (transferCancelRequested) return@forEach
             failures += deleteRecursively(target, progress, onProgressUpdate)
         }
-        return failures
+        return DeleteResult(failures = failures, cancelled = transferCancelRequested)
     }
 
     private fun deleteRecursively(
@@ -932,16 +976,25 @@ class MainActivity : AppCompatActivity() {
     ): Int {
         var failures = 0
 
+        if (transferCancelRequested) {
+            return 0
+        }
+
         if (!file.exists()) {
             return 0
         }
 
         if (file.isDirectory) {
             file.listFiles().forEach { child ->
+                if (transferCancelRequested) return@forEach
                 failures += deleteRecursively(child, progress, onProgressUpdate)
             }
         } else {
             progress.copiedBytes += file.length().coerceAtLeast(0L)
+        }
+
+        if (transferCancelRequested) {
+            return failures
         }
 
         progress.currentName = file.name ?: ""
@@ -970,6 +1023,9 @@ class MainActivity : AppCompatActivity() {
         val control = TransferControl()
 
         sources.forEach { source ->
+            if (transferCancelRequested) {
+                control.cancelled = true
+            }
             if (control.cancelled) return@forEach
             failures += if (source.isDirectory) {
                 copyDirectory(source, targetDir, progress, onProgressUpdate, control)
@@ -997,9 +1053,12 @@ class MainActivity : AppCompatActivity() {
         onProgressUpdate: () -> Unit,
         control: TransferControl
     ): Int {
-        if (control.cancelled) return 0
+        if (control.cancelled || transferCancelRequested) {
+            control.cancelled = true
+            return 0
+        }
         val name = source.name ?: "Folder"
-        val existing = target.findFile(name)
+        val existing = findChildByName(target, name)
         val newDir = when {
             existing == null -> target.createDirectory(name) ?: return countTotals(source).totalFiles
             isSameDocument(existing, source) -> {
@@ -1029,6 +1088,9 @@ class MainActivity : AppCompatActivity() {
 
         var failures = 0
         source.listFiles().forEach { child ->
+            if (transferCancelRequested) {
+                control.cancelled = true
+            }
             if (control.cancelled) return@forEach
             failures += if (child.isDirectory) {
                 copyDirectory(child, newDir, progress, onProgressUpdate, control)
@@ -1046,11 +1108,14 @@ class MainActivity : AppCompatActivity() {
         onProgressUpdate: () -> Unit,
         control: TransferControl
     ): Int {
-        if (control.cancelled) return 0
+        if (control.cancelled || transferCancelRequested) {
+            control.cancelled = true
+            return 0
+        }
         return try {
             val name = source.name ?: return 1
             val type = source.type ?: "application/octet-stream"
-            val existing = targetDir.findFile(name)
+            val existing = findChildByName(targetDir, name)
             if (existing != null) {
                 if (isSameDocument(existing, source)) {
                     markSkipped(source, progress, onProgressUpdate, control)
@@ -1078,6 +1143,11 @@ class MainActivity : AppCompatActivity() {
                 openOutputStream(dest)?.use { out ->
                     val buffer = ByteArray(8 * 1024)
                     while (true) {
+                        if (transferCancelRequested) {
+                            control.cancelled = true
+                            deleteRecursivelyInternal(dest)
+                            return 0
+                        }
                         val read = inp.read(buffer)
                         if (read <= 0) break
                         out.write(buffer, 0, read)
@@ -1160,6 +1230,17 @@ class MainActivity : AppCompatActivity() {
         progress.copiedBytes += totals.totalBytes
         progress.currentName = source.name ?: ""
         onProgressUpdate()
+    }
+
+    private fun findChildByName(targetDir: DocumentFile, name: String): DocumentFile? {
+        val direct = targetDir.findFile(name)
+        if (direct != null) return direct
+
+        // Some providers are inconsistent with findFile; fall back to a full child scan.
+        return targetDir.listFiles().firstOrNull { child ->
+            val childName = child.name ?: return@firstOrNull false
+            childName == name
+        }
     }
 
     private fun isSameDocument(first: DocumentFile, second: DocumentFile): Boolean {
@@ -1254,8 +1335,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             ""
         }
+        val cancelHintText = getString(R.string.transfer_tap_to_cancel)
 
-        binding.transferStatus.text = listOf(operationLabel, fileProgressText, bytesProgressText, currentFileText)
+        binding.transferStatus.text = listOf(operationLabel, fileProgressText, bytesProgressText, currentFileText, cancelHintText)
             .filter { it.isNotBlank() }
             .joinToString("\n")
 

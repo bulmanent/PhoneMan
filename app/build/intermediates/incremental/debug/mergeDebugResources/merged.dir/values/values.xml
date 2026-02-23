@@ -1952,13 +1952,15 @@
     <string name="exposed_dropdown_menu_content_description">Show dropdown menu</string>
     <string name="fab_transformation_scrim_behavior" translatable="false">com.google.android.material.transformation.FabTransformationScrimBehavior</string>
     <string name="fab_transformation_sheet_behavior" translatable="false">com.google.android.material.transformation.FabTransformationSheetBehavior</string>
+    <string name="folder_loading_cancelled">Folder loading cancelled.</string>
+    <string name="folder_loading_cancelled_toast">Cancelled folder loading.</string>
     <string name="folder_loading_may_take_time">This folder is taking longer to load.</string>
     <string name="full_access_enabled">Full storage access enabled.</string>
     <string name="full_access_not_granted">Full storage access was not granted.</string>
     <string name="hide_bottom_view_on_scroll_behavior" translatable="false">com.google.android.material.behavior.HideBottomViewOnScrollBehavior</string>
     <string description="Content description for an icon that appears in the title area of a dialog" name="icon_content_description">Dialog Icon</string>
     <string name="item_view_role_description">Tab</string>
-    <string name="loading_folder">Loading folder…</string>
+    <string name="loading_folder_tap_cancel">Loading folder… Tap to cancel.</string>
     <string name="location_dcim">Camera (DCIM)</string>
     <string name="location_documents">Documents</string>
     <string name="location_downloads">Downloads</string>
@@ -2094,6 +2096,7 @@
     <string name="transfer_bytes_progress">%1$s / %2$s</string>
     <string name="transfer_calculating">Preparing transfer…</string>
     <string name="transfer_cancelled">Transfer cancelled</string>
+    <string name="transfer_cancelling">Cancelling transfer…</string>
     <string name="transfer_copy_complete">Copy complete</string>
     <string name="transfer_copying">Copying files…</string>
     <string name="transfer_current_file">Current: %1$s</string>
@@ -2112,6 +2115,7 @@
     <string name="transfer_notification_progress">%1$d/%2$d files • %3$s/%4$s</string>
     <string name="transfer_notification_progress_files_only">%1$d/%2$d files</string>
     <string name="transfer_scanning">Calculating size…</string>
+    <string name="transfer_tap_to_cancel">Tap this progress panel to cancel.</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>

@@ -59,10 +59,12 @@ string conflict_dialog_title
 string empty_folder
 string error_folder_access_lost
 string error_permission_not_persisted
+string folder_loading_cancelled
+string folder_loading_cancelled_toast
 string folder_loading_may_take_time
 string full_access_enabled
 string full_access_not_granted
-string loading_folder
+string loading_folder_tap_cancel
 string location_dcim
 string location_documents
 string location_downloads
@@ -78,6 +80,7 @@ string transfer_already_running
 string transfer_bytes_progress
 string transfer_calculating
 string transfer_cancelled
+string transfer_cancelling
 string transfer_copy_complete
 string transfer_copying
 string transfer_current_file
@@ -96,4 +99,5 @@ string transfer_notification_failed
 string transfer_notification_progress
 string transfer_notification_progress_files_only
 string transfer_scanning
+string transfer_tap_to_cancel
 style Theme.PhoneMan

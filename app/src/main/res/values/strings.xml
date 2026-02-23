@@ -14,7 +14,9 @@
     <string name="action_select_all">Select all</string>
     <string name="selection_count">Selected: %1$d of %2$d</string>
     <string name="empty_folder">This folder is empty.</string>
-    <string name="loading_folder">Loading folder…</string>
+    <string name="loading_folder_tap_cancel">Loading folder… Tap to cancel.</string>
+    <string name="folder_loading_cancelled">Folder loading cancelled.</string>
+    <string name="folder_loading_cancelled_toast">Cancelled folder loading.</string>
     <string name="folder_loading_may_take_time">This folder is taking longer to load.</string>
     <string name="confirm_delete">Delete selected items?</string>
     <string name="confirm">Confirm</string>
@@ -57,6 +59,8 @@
     <string name="transfer_notification_complete">Transfer complete</string>
     <string name="transfer_notification_failed">Transfer completed with errors</string>
     <string name="transfer_cancelled">Transfer cancelled</string>
+    <string name="transfer_cancelling">Cancelling transfer…</string>
+    <string name="transfer_tap_to_cancel">Tap this progress panel to cancel.</string>
     <string name="conflict_dialog_title">Item already exists</string>
     <string name="conflict_dialog_message">"%1$s" already exists in this folder.</string>
     <string name="conflict_dialog_overwrite">Overwrite</string>
