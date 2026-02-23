@@ -59,8 +59,10 @@ string conflict_dialog_title
 string empty_folder
 string error_folder_access_lost
 string error_permission_not_persisted
+string folder_loading_may_take_time
 string full_access_enabled
 string full_access_not_granted
+string loading_folder
 string location_dcim
 string location_documents
 string location_downloads

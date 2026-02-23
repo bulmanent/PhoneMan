@@ -27,12 +27,14 @@
     <string name="conflict_dialog_message">"%1$s" already exists in this folder.</string>
     <string name="conflict_dialog_overwrite">Overwrite</string>
     <string name="conflict_dialog_skip">Skip</string>
-    <string name="conflict_dialog_title">File already exists</string>
+    <string name="conflict_dialog_title">Item already exists</string>
     <string name="empty_folder">This folder is empty.</string>
     <string name="error_folder_access_lost">Folder access expired. Please select it again.</string>
     <string name="error_permission_not_persisted">Access granted, but could not persist this folder permission.</string>
+    <string name="folder_loading_may_take_time">This folder is taking longer to load.</string>
     <string name="full_access_enabled">Full storage access enabled.</string>
     <string name="full_access_not_granted">Full storage access was not granted.</string>
+    <string name="loading_folder">Loading folder…</string>
     <string name="location_dcim">Camera (DCIM)</string>
     <string name="location_documents">Documents</string>
     <string name="location_downloads">Downloads</string>

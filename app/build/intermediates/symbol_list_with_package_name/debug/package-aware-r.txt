@@ -3764,11 +3764,13 @@ string error_permission_not_persisted
 string exposed_dropdown_menu_content_description
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
+string folder_loading_may_take_time
 string full_access_enabled
 string full_access_not_granted
 string hide_bottom_view_on_scroll_behavior
 string icon_content_description
 string item_view_role_description
+string loading_folder
 string location_dcim
 string location_documents
 string location_downloads

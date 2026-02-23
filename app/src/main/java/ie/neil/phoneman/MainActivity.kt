@@ -33,6 +33,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import ie.neil.phoneman.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -51,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         private const val TRANSFER_NOTIFICATION_CHANNEL_ID = "file_transfer"
         private const val TRANSFER_NOTIFICATION_ID = 1001
         private const val PROGRESS_UPDATE_INTERVAL_MS = 100L
+        private const val FOLDER_LOAD_HINT_DELAY_MS = 600L
     }
 
     private data class TransferTotals(
@@ -111,11 +114,20 @@ class MainActivity : AppCompatActivity() {
     private var transferInProgress = false
     private var canShowNotifications = false
     private var previousRequestedOrientation: Int? = null
+    private var folderLoadJob: Job? = null
+    private var folderLoadHintJob: Job? = null
+    private var folderLoadRequestId = 0L
 
     private val pickRoot = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             val uri = it.data?.data ?: return@registerForActivityResult
-            val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            val grantedFlags = (it.data?.flags ?: 0) and
+                (Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+            val flags = if (grantedFlags != 0) {
+                grantedFlags
+            } else {
+                Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            }
             try {
                 contentResolver.takePersistableUriPermission(uri, flags)
             } catch (_: SecurityException) {
@@ -444,17 +456,50 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCurrent() {
         val dir = dirStack.lastOrNull() ?: return
-        val children = dir.listFiles()
-            .mapNotNull { file ->
-                val name = file.name ?: return@mapNotNull null
-                FileItem(file, file.isDirectory, name)
-            }
-            .sortedWith(compareBy<FileItem> { !it.isDirectory }.thenBy { it.name.lowercase() })
-
-        adapter.submitList(children)
-        binding.emptyState.visibility = if (children.isEmpty()) View.VISIBLE else View.GONE
         binding.pathText.text = buildPath()
-        invalidateOptionsMenu()
+        showFolderLoadingState()
+
+        folderLoadRequestId += 1
+        val requestId = folderLoadRequestId
+
+        folderLoadJob?.cancel()
+        folderLoadHintJob?.cancel()
+
+        folderLoadHintJob = lifecycleScope.launch {
+            delay(FOLDER_LOAD_HINT_DELAY_MS)
+            if (requestId == folderLoadRequestId) {
+                Toast.makeText(
+                    this@MainActivity,
+                    R.string.folder_loading_may_take_time,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+
+        folderLoadJob = lifecycleScope.launch {
+            val children = withContext(Dispatchers.IO) {
+                dir.listFiles()
+                    .mapNotNull { file ->
+                        val name = file.name ?: return@mapNotNull null
+                        FileItem(file, file.isDirectory, name)
+                    }
+                    .sortedWith(compareBy<FileItem> { !it.isDirectory }.thenBy { it.name.lowercase() })
+            }
+
+            if (requestId != folderLoadRequestId) return@launch
+
+            folderLoadHintJob?.cancel()
+            adapter.submitList(children)
+            binding.emptyState.text = getString(R.string.empty_folder)
+            binding.emptyState.visibility = if (children.isEmpty()) View.VISIBLE else View.GONE
+            invalidateOptionsMenu()
+        }
+    }
+
+    private fun showFolderLoadingState() {
+        adapter.submitList(emptyList())
+        binding.emptyState.text = getString(R.string.loading_folder)
+        binding.emptyState.visibility = View.VISIBLE
     }
 
     private fun buildPath(): String {
@@ -961,6 +1006,7 @@ class MainActivity : AppCompatActivity() {
                 markSkipped(source, progress, onProgressUpdate, control)
                 return 0
             }
+            existing.isDirectory -> existing
             else -> {
                 when (resolveConflict(existing, source, control)) {
                     ConflictAction.OVERWRITE -> {
