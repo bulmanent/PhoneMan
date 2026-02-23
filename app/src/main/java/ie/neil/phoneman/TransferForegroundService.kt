@@ -73,29 +73,33 @@ class TransferForegroundService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val action = intent?.action ?: ACTION_START
-        when (action) {
-            ACTION_STOP -> {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-                stopSelf()
-            }
-            ACTION_START,
-            ACTION_UPDATE -> {
-                val currentIntent = intent
-                val title = currentIntent?.getStringExtra(EXTRA_TITLE).orEmpty()
-                val text = currentIntent?.getStringExtra(EXTRA_TEXT).orEmpty()
-                val percent = currentIntent?.getIntExtra(EXTRA_PERCENT, 0) ?: 0
-                val indeterminate = currentIntent?.getBooleanExtra(EXTRA_INDETERMINATE, true) ?: true
-                val notification = buildNotification(title, text, percent, indeterminate)
+        try {
+            val action = intent?.action ?: ACTION_START
+            when (action) {
+                ACTION_STOP -> {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                    stopSelf()
+                }
+                ACTION_START,
+                ACTION_UPDATE -> {
+                    val currentIntent = intent
+                    val title = currentIntent?.getStringExtra(EXTRA_TITLE).orEmpty()
+                    val text = currentIntent?.getStringExtra(EXTRA_TEXT).orEmpty()
+                    val percent = currentIntent?.getIntExtra(EXTRA_PERCENT, 0) ?: 0
+                    val indeterminate = currentIntent?.getBooleanExtra(EXTRA_INDETERMINATE, true) ?: true
+                    val notification = buildNotification(title, text, percent, indeterminate)
 
-                if (!isStarted) {
-                    startForeground(NOTIFICATION_ID, notification)
-                    isStarted = true
-                } else {
-                    val manager = getSystemService(NotificationManager::class.java)
-                    manager?.notify(NOTIFICATION_ID, notification)
+                    if (!isStarted) {
+                        startForeground(NOTIFICATION_ID, notification)
+                        isStarted = true
+                    } else {
+                        val manager = getSystemService(NotificationManager::class.java)
+                        manager?.notify(NOTIFICATION_ID, notification)
+                    }
                 }
             }
+        } catch (_: Exception) {
+            stopSelf()
         }
         return START_NOT_STICKY
     }

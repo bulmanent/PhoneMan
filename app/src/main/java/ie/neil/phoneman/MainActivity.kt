@@ -691,11 +691,7 @@ class MainActivity : AppCompatActivity() {
             operationLabel = operationLabel,
             indeterminate = true
         )
-        TransferForegroundService.start(
-            this,
-            operationLabel,
-            getString(R.string.transfer_notification_running)
-        )
+        startTransferForegroundService(operationLabel)
 
         lifecycleScope.launch {
             try {
@@ -790,7 +786,7 @@ class MainActivity : AppCompatActivity() {
             } finally {
                 hideTransferProgress()
                 transferInProgress = false
-                TransferForegroundService.stop(this@MainActivity)
+                stopTransferForegroundService()
                 unlockOrientationForTransfer()
                 invalidateOptionsMenu()
             }
@@ -886,11 +882,7 @@ class MainActivity : AppCompatActivity() {
             operationLabel = operationLabel,
             indeterminate = true
         )
-        TransferForegroundService.start(
-            this,
-            operationLabel,
-            getString(R.string.transfer_notification_running)
-        )
+        startTransferForegroundService(operationLabel)
 
         lifecycleScope.launch {
             try {
@@ -965,7 +957,7 @@ class MainActivity : AppCompatActivity() {
             } finally {
                 hideTransferProgress()
                 transferInProgress = false
-                TransferForegroundService.stop(this@MainActivity)
+                stopTransferForegroundService()
                 unlockOrientationForTransfer()
                 invalidateOptionsMenu()
             }
@@ -1477,13 +1469,17 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.transfer_notification_progress_files_only, copiedFiles, totalFiles)
         }
 
-        TransferForegroundService.update(
-            context = this,
-            title = operationLabel,
-            text = progressText,
-            percent = percent,
-            indeterminate = indeterminate
-        )
+        try {
+            TransferForegroundService.update(
+                context = this,
+                title = operationLabel,
+                text = progressText,
+                percent = percent,
+                indeterminate = indeterminate
+            )
+        } catch (_: Exception) {
+            // Fallback to in-app and regular notification progress only.
+        }
 
         if (!canShowNotifications) return
 
@@ -1501,6 +1497,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         NotificationManagerCompat.from(this).notify(TRANSFER_NOTIFICATION_ID, builder.build())
+    }
+
+    private fun startTransferForegroundService(operationLabel: String) {
+        try {
+            TransferForegroundService.start(
+                this,
+                operationLabel,
+                getString(R.string.transfer_notification_running)
+            )
+        } catch (_: Exception) {
+            // Some devices/policies block foreground-service start; continue transfer anyway.
+        }
+    }
+
+    private fun stopTransferForegroundService() {
+        try {
+            TransferForegroundService.stop(this)
+        } catch (_: Exception) {
+            // Ignore service stop issues.
+        }
     }
 
     private fun completeTransferNotification(success: Boolean) {
