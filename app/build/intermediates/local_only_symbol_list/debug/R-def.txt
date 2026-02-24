@@ -8,6 +8,7 @@ color surface_dark
 drawable ic_file
 drawable ic_folder
 drawable ic_launcher
+id action_clear_search
 id action_copy
 id action_cut
 id action_delete
@@ -15,7 +16,9 @@ id action_new_folder
 id action_paste
 id action_refresh
 id action_rename
+id action_search
 id action_select_all
+id action_sort
 id action_up
 id emptyState
 id fileList
@@ -36,6 +39,7 @@ menu selection_menu
 string action_add_folder
 string action_browse_location
 string action_change_root
+string action_clear_search
 string action_copy
 string action_cut
 string action_delete
@@ -44,7 +48,9 @@ string action_new_folder
 string action_paste
 string action_refresh
 string action_rename
+string action_search
 string action_select_all
+string action_sort
 string app_name
 string cancel
 string choose_folder
@@ -57,6 +63,7 @@ string conflict_dialog_overwrite
 string conflict_dialog_skip
 string conflict_dialog_title
 string empty_folder
+string empty_search_results
 string error_folder_access_lost
 string error_permission_not_persisted
 string folder_loading_cancelled
@@ -74,8 +81,18 @@ string location_music
 string location_pictures
 string new_folder_title
 string path_unknown
+string path_with_search
 string rename_title
+string search_filename_hint
+string search_here_label
+string search_recursive_label
 string selection_count
+string sort_date_asc
+string sort_date_desc
+string sort_name_asc
+string sort_name_desc
+string sort_type_asc
+string sort_type_desc
 string transfer_already_running
 string transfer_bytes_progress
 string transfer_calculating

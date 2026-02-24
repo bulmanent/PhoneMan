@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">PhoneMan</string>
     <string name="action_refresh">Refresh</string>
+    <string name="action_sort">Sort</string>
+    <string name="action_search">Search</string>
+    <string name="action_clear_search">Clear search</string>
     <string name="action_new_folder">New folder</string>
     <string name="action_paste">Paste</string>
     <string name="action_change_root">Locations</string>
@@ -14,6 +17,17 @@
     <string name="action_select_all">Select all</string>
     <string name="selection_count">Selected: %1$d of %2$d</string>
     <string name="empty_folder">This folder is empty.</string>
+    <string name="empty_search_results">No matching files were found.</string>
+    <string name="search_filename_hint">Filename contains…</string>
+    <string name="search_recursive_label">Search recursively</string>
+    <string name="search_here_label">Current folder</string>
+    <string name="path_with_search">%1$s  •  Search: "%2$s" (%3$s)</string>
+    <string name="sort_name_asc">Filename (A to Z)</string>
+    <string name="sort_name_desc">Filename (Z to A)</string>
+    <string name="sort_date_asc">Date (oldest first)</string>
+    <string name="sort_date_desc">Date (newest first)</string>
+    <string name="sort_type_asc">Type (A to Z)</string>
+    <string name="sort_type_desc">Type (Z to A)</string>
     <string name="loading_folder_tap_cancel">Loading folder… Tap to cancel.</string>
     <string name="folder_loading_cancelled">Folder loading cancelled.</string>
     <string name="folder_loading_cancelled_toast">Cancelled folder loading.</string>

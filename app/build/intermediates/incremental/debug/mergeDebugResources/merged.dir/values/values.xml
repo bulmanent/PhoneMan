@@ -1903,6 +1903,7 @@
     <string name="action_add_folder">Add folder…</string>
     <string name="action_browse_location">Browse device/folder…</string>
     <string name="action_change_root">Locations</string>
+    <string name="action_clear_search">Clear search</string>
     <string name="action_copy">Copy</string>
     <string name="action_cut">Cut</string>
     <string name="action_delete">Delete</string>
@@ -1911,7 +1912,9 @@
     <string name="action_paste">Paste</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_rename">Rename</string>
+    <string name="action_search">Search</string>
     <string name="action_select_all">Select all</string>
+    <string name="action_sort">Sort</string>
     <string name="androidx_startup" translatable="false">androidx.startup</string>
     <string name="app_name">PhoneMan</string>
     <string name="appbar_scrolling_view_behavior" translatable="false">com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior</string>
@@ -1943,6 +1946,7 @@
     <string name="conflict_dialog_skip">Skip</string>
     <string name="conflict_dialog_title">Item already exists</string>
     <string name="empty_folder">This folder is empty.</string>
+    <string name="empty_search_results">No matching files were found.</string>
     <string description="Screen reader announcement for when a checkbox is on error. [CHAR LIMIT=NONE]" name="error_a11y_label">
     Error: invalid
   </string>
@@ -2081,8 +2085,12 @@
     <string name="path_password_eye_mask_visible" translatable="false">M2,4.27 L2,4.27 L4.54,1.73 L4.54,1.73 L4.54,1 L23,1 L23,23 L1,23 L1,4.27 Z</string>
     <string name="path_password_strike_through" translatable="false">M3.27,4.27 L19.74,20.74</string>
     <string name="path_unknown">Storage</string>
+    <string name="path_with_search">%1$s  •  Search: "%2$s" (%3$s)</string>
     <string name="rename_title">Rename</string>
+    <string name="search_filename_hint">Filename contains…</string>
+    <string name="search_here_label">Current folder</string>
     <string name="search_menu_title">Search</string>
+    <string name="search_recursive_label">Search recursively</string>
     <string name="searchbar_scrolling_view_behavior" translatable="false">
     com.google.android.material.search.SearchBar$ScrollingViewBehavior
   </string>
@@ -2091,6 +2099,12 @@
     <string name="selection_count">Selected: %1$d of %2$d</string>
     <string description="Title of the side sheet&apos;s accessibility pane that is spoken by TalkBack when the side sheet appears on screen. [CHAR_LIMIT=NONE]" name="side_sheet_accessibility_pane_title">Side Sheet</string>
     <string name="side_sheet_behavior" translatable="false">com.google.android.material.sidesheet.SideSheetBehavior</string>
+    <string name="sort_date_asc">Date (oldest first)</string>
+    <string name="sort_date_desc">Date (newest first)</string>
+    <string name="sort_name_asc">Filename (A to Z)</string>
+    <string name="sort_name_desc">Filename (Z to A)</string>
+    <string name="sort_type_asc">Type (A to Z)</string>
+    <string name="sort_type_desc">Type (Z to A)</string>
     <string name="status_bar_notification_info_overflow">999+</string>
     <string name="transfer_already_running">Another file operation is already running.</string>
     <string name="transfer_bytes_progress">%1$s / %2$s</string>

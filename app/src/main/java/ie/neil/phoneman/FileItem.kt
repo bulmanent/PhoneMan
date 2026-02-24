@@ -5,5 +5,7 @@ import androidx.documentfile.provider.DocumentFile
  data class FileItem(
     val file: DocumentFile,
     val isDirectory: Boolean,
-    val name: String
+    val name: String,
+    val lastModified: Long,
+    val typeKey: String
 )

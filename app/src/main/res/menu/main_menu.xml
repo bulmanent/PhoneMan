@@ -11,6 +11,18 @@
         android:title="@string/action_refresh"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_search"
+        android:title="@string/action_search"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_clear_search"
+        android:title="@string/action_clear_search"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_new_folder"
         android:icon="@android:drawable/ic_menu_add"
         android:title="@string/action_new_folder"

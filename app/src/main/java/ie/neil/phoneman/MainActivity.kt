@@ -21,6 +21,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -35,6 +36,7 @@ import ie.neil.phoneman.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -45,6 +47,7 @@ import java.io.OutputStream
 import java.text.Normalizer
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicReference
+import kotlin.coroutines.coroutineContext
 
 class MainActivity : AppCompatActivity() {
     companion object {
@@ -108,6 +111,12 @@ class MainActivity : AppCompatActivity() {
         val action: () -> Unit
     )
 
+    private enum class SortField {
+        NAME,
+        DATE,
+        TYPE
+    }
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: FileAdapter
 
@@ -126,6 +135,10 @@ class MainActivity : AppCompatActivity() {
     private var folderLoadJob: Job? = null
     private var folderLoadHintJob: Job? = null
     private var folderLoadRequestId = 0L
+    private var sortField = SortField.NAME
+    private var sortAscending = true
+    private var searchQuery = ""
+    private var searchRecursive = false
 
     private val pickRoot = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
@@ -247,6 +260,7 @@ class MainActivity : AppCompatActivity() {
             it.isVisible = clipboard.isNotEmpty()
             it.isEnabled = !transferInProgress
         }
+        menu.findItem(R.id.action_clear_search)?.isVisible = searchQuery.isNotBlank()
         return super.onPrepareOptionsMenu(menu)
     }
 
@@ -262,6 +276,18 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_paste -> {
                 pasteClipboard()
+                true
+            }
+            R.id.action_sort -> {
+                showSortDialog()
+                true
+            }
+            R.id.action_search -> {
+                promptSearch()
+                true
+            }
+            R.id.action_clear_search -> {
+                clearSearch()
                 true
             }
             R.id.action_up -> {
@@ -476,7 +502,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun loadCurrent() {
         val dir = dirStack.lastOrNull() ?: return
-        binding.pathText.text = buildPath()
+        binding.pathText.text = buildPathWithSearch()
         showFolderLoadingState()
 
         folderLoadRequestId += 1
@@ -498,19 +524,29 @@ class MainActivity : AppCompatActivity() {
 
         folderLoadJob = lifecycleScope.launch {
             val children = withContext(Dispatchers.IO) {
-                dir.listFiles()
-                    .mapNotNull { file ->
-                        val name = file.name ?: return@mapNotNull null
-                        FileItem(file, file.isDirectory, name)
-                    }
-                    .sortedWith(compareBy<FileItem> { !it.isDirectory }.thenBy { it.name.lowercase() })
+                val items = if (searchQuery.isNotBlank() && searchRecursive) {
+                    collectRecursiveMatches(dir, searchQuery)
+                } else {
+                    dir.listFiles().mapNotNull { buildFileItem(it) }
+                }
+                val filtered = if (searchQuery.isNotBlank() && !searchRecursive) {
+                    val query = searchQuery.lowercase()
+                    items.filter { it.name.lowercase().contains(query) }
+                } else {
+                    items
+                }
+                sortItems(filtered)
             }
 
             if (requestId != folderLoadRequestId) return@launch
 
             folderLoadHintJob?.cancel()
             adapter.submitList(children)
-            binding.emptyState.text = getString(R.string.empty_folder)
+            binding.emptyState.text = if (searchQuery.isBlank()) {
+                getString(R.string.empty_folder)
+            } else {
+                getString(R.string.empty_search_results)
+            }
             binding.emptyState.isClickable = false
             binding.emptyState.visibility = if (children.isEmpty()) View.VISIBLE else View.GONE
             invalidateOptionsMenu()
@@ -546,6 +582,159 @@ class MainActivity : AppCompatActivity() {
     private fun buildPath(): String {
         if (dirStack.isEmpty()) return getString(R.string.path_unknown)
         return dirStack.joinToString(" / ") { it.name ?: getString(R.string.path_unknown) }
+    }
+
+    private fun buildPathWithSearch(): String {
+        val path = buildPath()
+        if (searchQuery.isBlank()) return path
+        return getString(
+            R.string.path_with_search,
+            path,
+            searchQuery,
+            if (searchRecursive) getString(R.string.search_recursive_label) else getString(R.string.search_here_label)
+        )
+    }
+
+    private fun clearSearch() {
+        searchQuery = ""
+        searchRecursive = false
+        loadCurrent()
+    }
+
+    private fun promptSearch() {
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val pad = (16 * resources.displayMetrics.density).toInt()
+            setPadding(pad, pad / 2, pad, 0)
+        }
+        val input = EditText(this).apply {
+            setText(searchQuery)
+            hint = getString(R.string.search_filename_hint)
+            setSingleLine()
+        }
+        val recursiveCheckbox = CheckBox(this).apply {
+            text = getString(R.string.search_recursive_label)
+            isChecked = searchRecursive
+        }
+        content.addView(input)
+        content.addView(recursiveCheckbox)
+
+        AlertDialog.Builder(this)
+            .setTitle(R.string.action_search)
+            .setView(content)
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                searchQuery = input.text.toString().trim()
+                searchRecursive = recursiveCheckbox.isChecked && searchQuery.isNotBlank()
+                loadCurrent()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .setNeutralButton(R.string.action_clear_search) { _, _ ->
+                clearSearch()
+            }
+            .show()
+    }
+
+    private fun showSortDialog() {
+        val options = arrayOf(
+            getString(R.string.sort_name_asc),
+            getString(R.string.sort_name_desc),
+            getString(R.string.sort_date_asc),
+            getString(R.string.sort_date_desc),
+            getString(R.string.sort_type_asc),
+            getString(R.string.sort_type_desc)
+        )
+        val checked = when (sortField) {
+            SortField.NAME -> if (sortAscending) 0 else 1
+            SortField.DATE -> if (sortAscending) 2 else 3
+            SortField.TYPE -> if (sortAscending) 4 else 5
+        }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.action_sort)
+            .setSingleChoiceItems(options, checked) { dialog, which ->
+                when (which) {
+                    0 -> {
+                        sortField = SortField.NAME
+                        sortAscending = true
+                    }
+                    1 -> {
+                        sortField = SortField.NAME
+                        sortAscending = false
+                    }
+                    2 -> {
+                        sortField = SortField.DATE
+                        sortAscending = true
+                    }
+                    3 -> {
+                        sortField = SortField.DATE
+                        sortAscending = false
+                    }
+                    4 -> {
+                        sortField = SortField.TYPE
+                        sortAscending = true
+                    }
+                    5 -> {
+                        sortField = SortField.TYPE
+                        sortAscending = false
+                    }
+                }
+                dialog.dismiss()
+                loadCurrent()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun buildFileItem(file: DocumentFile): FileItem? {
+        val name = file.name ?: return null
+        return FileItem(
+            file = file,
+            isDirectory = file.isDirectory,
+            name = name,
+            lastModified = file.lastModified(),
+            typeKey = if (file.isDirectory) "" else name.substringAfterLast('.', "").lowercase()
+        )
+    }
+
+    private suspend fun collectRecursiveMatches(root: DocumentFile, query: String): List<FileItem> {
+        val queryLower = query.lowercase()
+        val results = mutableListOf<FileItem>()
+        val queue = ArrayDeque<DocumentFile>()
+        queue.add(root)
+
+        while (queue.isNotEmpty()) {
+            coroutineContext.ensureActive()
+            val directory = queue.removeFirst()
+            directory.listFiles().forEach { child ->
+                coroutineContext.ensureActive()
+                val item = buildFileItem(child) ?: return@forEach
+                if (item.name.lowercase().contains(queryLower)) {
+                    results += item
+                }
+                if (child.isDirectory) {
+                    queue.add(child)
+                }
+            }
+        }
+        return results
+    }
+
+    private fun sortItems(items: List<FileItem>): List<FileItem> {
+        return items.sortedWith { left, right ->
+            if (left.isDirectory != right.isDirectory) {
+                return@sortedWith if (left.isDirectory) -1 else 1
+            }
+
+            val sortValue = when (sortField) {
+                SortField.NAME -> left.name.lowercase().compareTo(right.name.lowercase())
+                SortField.DATE -> left.lastModified.compareTo(right.lastModified)
+                SortField.TYPE -> {
+                    val typeCompare = left.typeKey.compareTo(right.typeKey)
+                    if (typeCompare != 0) typeCompare
+                    else left.name.lowercase().compareTo(right.name.lowercase())
+                }
+            }
+            if (sortAscending) sortValue else -sortValue
+        }
     }
 
     private val actionModeCallback = object : ActionMode.Callback {
