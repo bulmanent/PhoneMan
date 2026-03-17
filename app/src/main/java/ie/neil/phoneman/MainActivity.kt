@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.Activity
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.webkit.MimeTypeMap
+import androidx.core.content.FileProvider
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -191,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                     if (item.isDirectory) {
                         openDirectory(item.file)
                     } else {
-                        Toast.makeText(this, item.name, Toast.LENGTH_SHORT).show()
+                        openFile(item)
                     }
                 }
             },
@@ -498,6 +501,26 @@ class MainActivity : AppCompatActivity() {
     private fun openDirectory(dir: DocumentFile) {
         dirStack.add(dir)
         loadCurrent()
+    }
+
+    private fun openFile(item: FileItem) {
+        val uri = item.file.uri
+        val mimeType = MimeTypeMap.getSingleton()
+            .getMimeTypeFromExtension(item.typeKey) ?: "*/*"
+        val contentUri = if (uri.scheme == "file") {
+            FileProvider.getUriForFile(this, "${packageName}.fileprovider", File(uri.path!!))
+        } else {
+            uri
+        }
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(contentUri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        try {
+            startActivity(Intent.createChooser(intent, item.name))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.open_no_app, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun loadCurrent() {

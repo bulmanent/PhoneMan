@@ -81,4 +81,5 @@
     <string name="conflict_dialog_overwrite">Overwrite</string>
     <string name="conflict_dialog_skip">Skip</string>
     <string name="conflict_dialog_apply_all">Apply this choice to all remaining conflicts</string>
+    <string name="open_no_app">No app found to open this file type.</string>
 </resources>
