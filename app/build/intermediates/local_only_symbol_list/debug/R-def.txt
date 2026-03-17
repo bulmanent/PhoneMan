@@ -1,5 +1,6 @@
 R_DEF: Internal format may change without notice
 local
+array view_mode_labels
 color accent
 color primary
 color selected
@@ -19,6 +20,7 @@ id action_search
 id action_select_all
 id action_sort
 id action_up
+id action_view_mode
 id emptyState
 id fileList
 id itemIcon
@@ -33,6 +35,8 @@ id transferProgress
 id transferStatus
 layout activity_main
 layout item_file
+layout item_file_compact
+layout item_file_grid
 menu main_menu
 menu selection_menu
 mipmap ic_launcher
@@ -51,6 +55,7 @@ string action_rename
 string action_search
 string action_select_all
 string action_sort
+string action_view_mode
 string app_name
 string cancel
 string choose_folder

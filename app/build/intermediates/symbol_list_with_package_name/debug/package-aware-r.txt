@@ -77,6 +77,7 @@ animator mtrl_fab_hide_motion_spec
 animator mtrl_fab_show_motion_spec
 animator mtrl_fab_transformation_sheet_collapse_spec
 animator mtrl_fab_transformation_sheet_expand_spec
+array view_mode_labels
 attr actionBarDivider
 attr actionBarItemBackground
 attr actionBarPopupTheme
@@ -3089,6 +3090,7 @@ id action_select_all
 id action_sort
 id action_text
 id action_up
+id action_view_mode
 id actions
 id activity_chooser_view_content
 id add
@@ -3625,6 +3627,8 @@ layout design_text_input_start_icon
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
 layout item_file
+layout item_file_compact
+layout item_file_grid
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title
@@ -3732,6 +3736,7 @@ string action_rename
 string action_search
 string action_select_all
 string action_sort
+string action_view_mode
 string androidx_startup
 string app_name
 string appbar_scrolling_view_behavior

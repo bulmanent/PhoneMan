@@ -3,8 +3,12 @@ package ie.neil.phoneman
 import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import coil.dispose
+import coil.load
+import coil.size.Scale
 import com.google.android.material.color.MaterialColors
 import ie.neil.phoneman.databinding.ItemFileBinding
 import ie.neil.phoneman.databinding.ItemFileCompactBinding
@@ -17,6 +21,12 @@ class FileAdapter(
     private val onClick: (FileItem) -> Unit,
     private val onLongClick: (FileItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    companion object {
+        private val IMAGE_EXTENSIONS = setOf(
+            "jpg", "jpeg", "png", "gif", "webp", "bmp", "heic", "heif", "avif"
+        )
+    }
 
     private val items = mutableListOf<FileItem>()
     private val selected = mutableSetOf<String>()
@@ -132,15 +142,32 @@ class FileAdapter(
 
         fun bind(item: FileItem) {
             binding.itemName.text = item.name
-            binding.itemIcon.setImageResource(
-                if (item.isDirectory) R.drawable.ic_folder else R.drawable.ic_file
-            )
+
             val density = binding.root.context.resources.displayMetrics.density
             val sizePx = (iconSizeDp * density).toInt()
             binding.itemIcon.layoutParams = binding.itemIcon.layoutParams.also {
                 it.width = sizePx
                 it.height = sizePx
             }
+
+            val isImagePreview = !item.isDirectory && item.typeKey in IMAGE_EXTENSIONS
+            if (isImagePreview) {
+                binding.itemIcon.scaleType = ImageView.ScaleType.CENTER_CROP
+                binding.itemIcon.load(item.file.uri) {
+                    placeholder(R.drawable.ic_file)
+                    error(R.drawable.ic_file)
+                    crossfade(true)
+                    scale(Scale.FILL)
+                    size(sizePx, sizePx)
+                }
+            } else {
+                binding.itemIcon.dispose()
+                binding.itemIcon.scaleType = ImageView.ScaleType.FIT_CENTER
+                binding.itemIcon.setImageResource(
+                    if (item.isDirectory) R.drawable.ic_folder else R.drawable.ic_file
+                )
+            }
+
             binding.itemRoot.setBackgroundColor(if (isSelected(item)) selectedBg(this) else defaultBg(this))
             binding.root.setOnClickListener { onClick(item) }
             binding.root.setOnLongClickListener { onLongClick(item); true }

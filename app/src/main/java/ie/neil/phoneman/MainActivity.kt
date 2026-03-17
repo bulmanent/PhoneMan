@@ -535,6 +535,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun shareSelected(selected: List<FileItem>) {
+        val uris = ArrayList<Uri>()
+        for (item in selected) {
+            if (item.isDirectory) continue
+            val uri = item.file.uri
+            val contentUri = if (uri.scheme == "file") {
+                FileProvider.getUriForFile(this, "${packageName}.fileprovider", File(uri.path!!))
+            } else {
+                uri
+            }
+            uris.add(contentUri)
+        }
+        if (uris.isEmpty()) return
+
+        val mimeTypes = selected.filter { !it.isDirectory }.map { item ->
+            MimeTypeMap.getSingleton().getMimeTypeFromExtension(item.typeKey) ?: "*/*"
+        }.toSet()
+        val mimeType = if (mimeTypes.size == 1) mimeTypes.first() else "*/*"
+
+        val intent = if (uris.size == 1) {
+            Intent(Intent.ACTION_SEND).apply {
+                type = mimeType
+                putExtra(Intent.EXTRA_STREAM, uris[0])
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        } else {
+            Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+                type = mimeType
+                putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+        try {
+            startActivity(Intent.createChooser(intent, getString(R.string.action_share)))
+        } catch (e: ActivityNotFoundException) {
+            Toast.makeText(this, R.string.open_no_app, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun loadCurrent() {
         val dir = dirStack.lastOrNull() ?: return
         binding.pathText.text = buildPathWithSearch()
@@ -817,6 +856,11 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_select_all -> {
                     adapter.selectAll()
                     updateActionModeTitle()
+                    true
+                }
+                R.id.action_share -> {
+                    shareSelected(selected)
+                    mode.finish()
                     true
                 }
                 R.id.action_copy -> {

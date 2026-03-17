@@ -8,7 +8,11 @@
         "source": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-main-36:/layout/item_file.xml"
     },
     {
-        "merged": "ie.neil.phoneman.app-mergeDebugResources-33:/layout/activity_main.xml",
-        "source": "ie.neil.phoneman.app-main-36:/layout/activity_main.xml"
+        "merged": "ie.neil.phoneman.app-mergeDebugResources-33:/layout/item_file_grid.xml",
+        "source": "ie.neil.phoneman.app-main-36:/layout/item_file_grid.xml"
+    },
+    {
+        "merged": "ie.neil.phoneman.app-mergeDebugResources-33:/layout/item_file_compact.xml",
+        "source": "ie.neil.phoneman.app-main-36:/layout/item_file_compact.xml"
     }
 ]

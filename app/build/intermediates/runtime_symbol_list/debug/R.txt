@@ -76,6 +76,7 @@ int animator mtrl_fab_hide_motion_spec 0x7f02001e
 int animator mtrl_fab_show_motion_spec 0x7f02001f
 int animator mtrl_fab_transformation_sheet_collapse_spec 0x7f020020
 int animator mtrl_fab_transformation_sheet_expand_spec 0x7f020021
+int array view_mode_labels 0x7f140000
 int attr actionBarDivider 0x7f030000
 int attr actionBarItemBackground 0x7f030001
 int attr actionBarPopupTheme 0x7f030002
@@ -3088,6 +3089,7 @@ int id action_select_all 0x7f080049
 int id action_sort 0x7f08004a
 int id action_text 0x7f08004b
 int id action_up 0x7f08004c
+int id action_view_mode 0x7f0801df
 int id actions 0x7f08004d
 int id activity_chooser_view_content 0x7f08004e
 int id add 0x7f08004f
@@ -3624,6 +3626,8 @@ int layout design_text_input_start_icon 0x7f0b002c
 int layout ime_base_split_test_activity 0x7f0b002d
 int layout ime_secondary_split_test_activity 0x7f0b002e
 int layout item_file 0x7f0b002f
+int layout item_file_compact 0x7f0b006d
+int layout item_file_grid 0x7f0b006e
 int layout m3_alert_dialog 0x7f0b0030
 int layout m3_alert_dialog_actions 0x7f0b0031
 int layout m3_alert_dialog_title 0x7f0b0032
@@ -3731,6 +3735,7 @@ int string action_rename 0x7f0f0026
 int string action_search 0x7f0f0027
 int string action_select_all 0x7f0f0028
 int string action_sort 0x7f0f0029
+int string action_view_mode 0x7f0f00f9
 int string androidx_startup 0x7f0f002a
 int string app_name 0x7f0f002b
 int string appbar_scrolling_view_behavior 0x7f0f002c
