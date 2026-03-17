@@ -80,6 +80,7 @@ string location_movies
 string location_music
 string location_pictures
 string new_folder_title
+string open_no_app
 string path_unknown
 string path_with_search
 string rename_title
@@ -119,3 +120,4 @@ string transfer_notification_running
 string transfer_scanning
 string transfer_tap_to_cancel
 style Theme.PhoneMan
+xml file_paths

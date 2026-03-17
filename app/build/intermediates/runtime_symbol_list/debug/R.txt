@@ -3887,6 +3887,7 @@ int string mtrl_switch_track_path 0x7f0f00c2
 int string mtrl_timepicker_cancel 0x7f0f00c3
 int string mtrl_timepicker_confirm 0x7f0f00c4
 int string new_folder_title 0x7f0f00c5
+int string open_no_app 0x7f0f00f8
 int string password_toggle_content_description 0x7f0f00c6
 int string path_password_eye 0x7f0f00c7
 int string path_password_eye_mask_strike_through 0x7f0f00c8
@@ -6871,3 +6872,4 @@ int[] styleable ViewStubCompat { 0x010100d0, 0x010100f2, 0x010100f3 }
 int styleable ViewStubCompat_android_id 0
 int styleable ViewStubCompat_android_layout 1
 int styleable ViewStubCompat_android_inflatedId 2
+int xml file_paths 0x7f120000

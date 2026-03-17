@@ -8,6 +8,10 @@
         "source": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-main-36:/menu/main_menu.xml"
     },
     {
+        "merged": "ie.neil.phoneman.app-merged_res-34:/xml_file_paths.xml.flat",
+        "source": "ie.neil.phoneman.app-main-36:/xml/file_paths.xml"
+    },
+    {
         "merged": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-merged_res-34:/drawable_ic_file.xml.flat",
         "source": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-main-36:/drawable/ic_file.xml"
     },
@@ -18,10 +22,6 @@
     {
         "merged": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-merged_res-34:/layout_activity_main.xml.flat",
         "source": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-main-36:/layout/activity_main.xml"
-    },
-    {
-        "merged": "ie.neil.phoneman.app-merged_res-34:/menu_main_menu.xml.flat",
-        "source": "ie.neil.phoneman.app-main-36:/menu/main_menu.xml"
     },
     {
         "merged": "/home/neil/.gradle/daemon/8.2/ie.neil.phoneman.app-merged_res-34:/menu_selection_menu.xml.flat",

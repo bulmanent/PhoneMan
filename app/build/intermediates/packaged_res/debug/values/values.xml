@@ -49,6 +49,7 @@
     <string name="location_music">Music</string>
     <string name="location_pictures">Pictures</string>
     <string name="new_folder_title">New folder</string>
+    <string name="open_no_app">No app found to open this file type.</string>
     <string name="path_unknown">Storage</string>
     <string name="path_with_search">%1$s  •  Search: "%2$s" (%3$s)</string>
     <string name="rename_title">Rename</string>

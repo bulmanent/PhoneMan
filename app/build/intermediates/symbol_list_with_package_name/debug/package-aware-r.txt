@@ -3888,6 +3888,7 @@ string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
 string new_folder_title
+string open_no_app
 string password_toggle_content_description
 string path_password_eye
 string path_password_eye_mask_strike_through
@@ -5211,3 +5212,4 @@ styleable View android_theme android_focusable paddingEnd paddingStart theme
 styleable ViewBackgroundHelper android_background backgroundTint backgroundTintMode
 styleable ViewPager2 android_orientation
 styleable ViewStubCompat android_id android_layout android_inflatedId
+xml file_paths
