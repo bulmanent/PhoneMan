@@ -106,9 +106,9 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /home/neil/.gradle/caches/t
 	android:label
 		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:9-41
 	android:roundIcon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:9-50
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:9-48
 	android:icon
-		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:9-45
+		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:9-43
 	android:allowBackup
 		ADDED from /home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:12:9-35
 	android:theme

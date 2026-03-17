@@ -2927,7 +2927,6 @@ int drawable ic_clock_black_24dp 0x7f07008e
 int drawable ic_file 0x7f07008f
 int drawable ic_folder 0x7f070090
 int drawable ic_keyboard_black_24dp 0x7f070091
-int drawable ic_launcher 0x7f070092
 int drawable ic_m3_chip_check 0x7f070093
 int drawable ic_m3_chip_checked_circle 0x7f070094
 int drawable ic_m3_chip_close 0x7f070095
@@ -3688,6 +3687,7 @@ int layout select_dialog_singlechoice_material 0x7f0b006b
 int layout support_simple_spinner_dropdown_item 0x7f0b006c
 int menu main_menu 0x7f0d0000
 int menu selection_menu 0x7f0d0001
+int mipmap ic_launcher 0x7f130000
 int plurals mtrl_badge_content_description 0x7f0e0000
 int string abc_action_bar_home_description 0x7f0f0000
 int string abc_action_bar_up_description 0x7f0f0001

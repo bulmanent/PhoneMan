@@ -40,12 +40,12 @@
 24-->[androidx.core:core:1.13.1] /home/neil/.gradle/caches/transforms-3/d16141837b1dfced26fb2d5628bc2c81/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 25        android:debuggable="true"
 26        android:extractNativeLibs="false"
-27        android:icon="@drawable/ic_launcher"
-27-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:9-45
+27        android:icon="@mipmap/ic_launcher"
+27-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:13:9-43
 28        android:label="@string/app_name"
 28-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:14:9-41
-29        android:roundIcon="@drawable/ic_launcher"
-29-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:9-50
+29        android:roundIcon="@mipmap/ic_launcher"
+29-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:15:9-48
 30        android:supportsRtl="true"
 30-->/home/neil/StudioProjects/PhoneMan/app/src/main/AndroidManifest.xml:16:9-35
 31        android:testOnly="true"

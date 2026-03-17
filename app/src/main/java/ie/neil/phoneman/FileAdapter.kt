@@ -1,20 +1,32 @@
 package ie.neil.phoneman
 
+import android.text.format.Formatter
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
 import ie.neil.phoneman.databinding.ItemFileBinding
+import ie.neil.phoneman.databinding.ItemFileCompactBinding
+import ie.neil.phoneman.databinding.ItemFileGridBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class FileAdapter(
     private val onClick: (FileItem) -> Unit,
     private val onLongClick: (FileItem) -> Unit
-) : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val items = mutableListOf<FileItem>()
     private val selected = mutableSetOf<String>()
+    private val dateFormat = SimpleDateFormat("d MMM yyyy", Locale.getDefault())
+
+    var viewMode: ViewMode = ViewMode.DETAILS
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     fun submitList(newItems: List<FileItem>) {
         items.clear()
@@ -22,13 +34,9 @@ class FileAdapter(
         notifyDataSetChanged()
     }
 
-    fun getSelected(): List<FileItem> {
-        return items.filter { selected.contains(it.file.uri.toString()) }
-    }
+    fun getSelected(): List<FileItem> = items.filter { selected.contains(it.file.uri.toString()) }
 
-    fun getSelectedCount(): Int {
-        return getSelected().size
-    }
+    fun getSelectedCount(): Int = getSelected().size
 
     fun toggleSelection(item: FileItem) {
         val key = item.file.uri.toString()
@@ -47,38 +55,95 @@ class FileAdapter(
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FileViewHolder {
-        val binding = ItemFileBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return FileViewHolder(binding)
+    override fun getItemViewType(position: Int): Int = viewMode.ordinal
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        val inflater = LayoutInflater.from(parent.context)
+        return when (ViewMode.values()[viewType]) {
+            ViewMode.COMPACT ->
+                CompactViewHolder(ItemFileCompactBinding.inflate(inflater, parent, false))
+            ViewMode.DETAILS ->
+                DetailsViewHolder(ItemFileBinding.inflate(inflater, parent, false))
+            ViewMode.ICONS ->
+                GridViewHolder(ItemFileGridBinding.inflate(inflater, parent, false), iconSizeDp = 48)
+            ViewMode.LARGE_ICONS ->
+                GridViewHolder(ItemFileGridBinding.inflate(inflater, parent, false), iconSizeDp = 72)
+        }
     }
 
-    override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-        holder.bind(items[position])
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = items[position]
+        when (holder) {
+            is CompactViewHolder -> holder.bind(item)
+            is DetailsViewHolder -> holder.bind(item)
+            is GridViewHolder    -> holder.bind(item)
+        }
     }
 
     override fun getItemCount(): Int = items.size
 
-    inner class FileViewHolder(private val binding: ItemFileBinding) : RecyclerView.ViewHolder(binding.root) {
+    private fun isSelected(item: FileItem) = selected.contains(item.file.uri.toString())
+
+    private fun selectedBg(holder: RecyclerView.ViewHolder) =
+        ContextCompat.getColor(holder.itemView.context, R.color.selected)
+
+    private fun defaultBg(holder: RecyclerView.ViewHolder) =
+        MaterialColors.getColor(holder.itemView, android.R.attr.colorBackground)
+
+    inner class CompactViewHolder(private val binding: ItemFileCompactBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: FileItem) {
             binding.itemName.text = item.name
-            binding.itemInfo.text = if (item.isDirectory) "Folder" else "File"
             binding.itemIcon.setImageResource(
                 if (item.isDirectory) R.drawable.ic_folder else R.drawable.ic_file
             )
+            binding.itemRoot.setBackgroundColor(if (isSelected(item)) selectedBg(this) else defaultBg(this))
+            binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnLongClickListener { onLongClick(item); true }
+        }
+    }
 
-            val selectedColor = ContextCompat.getColor(binding.root.context, R.color.selected)
-            val defaultColor = MaterialColors.getColor(binding.root, android.R.attr.colorBackground)
-            binding.itemRoot.setBackgroundColor(
-                if (selected.contains(item.file.uri.toString())) selectedColor else defaultColor
+    inner class DetailsViewHolder(private val binding: ItemFileBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: FileItem) {
+            binding.itemName.text = item.name
+            binding.itemIcon.setImageResource(
+                if (item.isDirectory) R.drawable.ic_folder else R.drawable.ic_file
             )
+            binding.itemInfo.text = if (item.isDirectory) {
+                "Folder"
+            } else {
+                val size = Formatter.formatFileSize(binding.root.context, item.size)
+                val date = dateFormat.format(Date(item.lastModified))
+                "$size  •  $date"
+            }
+            binding.itemRoot.setBackgroundColor(if (isSelected(item)) selectedBg(this) else defaultBg(this))
+            binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnLongClickListener { onLongClick(item); true }
+        }
+    }
 
-            binding.root.setOnClickListener {
-                onClick(item)
+    inner class GridViewHolder(
+        private val binding: ItemFileGridBinding,
+        private val iconSizeDp: Int
+    ) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(item: FileItem) {
+            binding.itemName.text = item.name
+            binding.itemIcon.setImageResource(
+                if (item.isDirectory) R.drawable.ic_folder else R.drawable.ic_file
+            )
+            val density = binding.root.context.resources.displayMetrics.density
+            val sizePx = (iconSizeDp * density).toInt()
+            binding.itemIcon.layoutParams = binding.itemIcon.layoutParams.also {
+                it.width = sizePx
+                it.height = sizePx
             }
-            binding.root.setOnLongClickListener {
-                onLongClick(item)
-                true
-            }
+            binding.itemRoot.setBackgroundColor(if (isSelected(item)) selectedBg(this) else defaultBg(this))
+            binding.root.setOnClickListener { onClick(item) }
+            binding.root.setOnLongClickListener { onLongClick(item); true }
         }
     }
 }

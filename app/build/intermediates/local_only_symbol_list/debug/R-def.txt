@@ -7,7 +7,6 @@ color surface
 color surface_dark
 drawable ic_file
 drawable ic_folder
-drawable ic_launcher
 id action_clear_search
 id action_copy
 id action_cut
@@ -36,6 +35,7 @@ layout activity_main
 layout item_file
 menu main_menu
 menu selection_menu
+mipmap ic_launcher
 string action_add_folder
 string action_browse_location
 string action_change_root

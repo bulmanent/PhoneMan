@@ -2,10 +2,11 @@ package ie.neil.phoneman
 
 import androidx.documentfile.provider.DocumentFile
 
- data class FileItem(
+data class FileItem(
     val file: DocumentFile,
     val isDirectory: Boolean,
     val name: String,
     val lastModified: Long,
+    val size: Long,
     val typeKey: String
 )

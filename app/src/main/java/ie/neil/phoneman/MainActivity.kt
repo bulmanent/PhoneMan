@@ -34,6 +34,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import ie.neil.phoneman.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val PREFS_NAME = "phoneman"
         private const val KEY_ROOT_URI = "root_uri"
+        private const val KEY_VIEW_MODE = "view_mode"
 
         private const val TRANSFER_NOTIFICATION_CHANNEL_ID = "file_transfer"
         private const val TRANSFER_NOTIFICATION_ID = 1001
@@ -122,6 +124,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: FileAdapter
+    private var viewMode = ViewMode.DETAILS
 
     private var rootUri: Uri? = null
     private val dirStack = ArrayDeque<DocumentFile>()
@@ -207,8 +210,13 @@ class MainActivity : AppCompatActivity() {
             }
         )
 
-        binding.fileList.layoutManager = LinearLayoutManager(this)
         binding.fileList.adapter = adapter
+        val savedMode = runCatching {
+            ViewMode.valueOf(
+                getSharedPreferences(PREFS_NAME, MODE_PRIVATE).getString(KEY_VIEW_MODE, null) ?: ""
+            )
+        }.getOrDefault(ViewMode.DETAILS)
+        setViewMode(savedMode)
         binding.emptyState.setOnClickListener {
             if (folderLoadJob?.isActive == true) {
                 cancelFolderLoad()
@@ -295,6 +303,10 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.action_up -> {
                 showRootChooser()
+                true
+            }
+            R.id.action_view_mode -> {
+                showViewModeDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -657,6 +669,30 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    private fun setViewMode(mode: ViewMode) {
+        viewMode = mode
+        adapter.viewMode = mode
+        binding.fileList.layoutManager = when (mode) {
+            ViewMode.COMPACT, ViewMode.DETAILS -> LinearLayoutManager(this)
+            ViewMode.ICONS      -> GridLayoutManager(this, 3)
+            ViewMode.LARGE_ICONS -> GridLayoutManager(this, 2)
+        }
+        getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+            .edit().putString(KEY_VIEW_MODE, mode.name).apply()
+    }
+
+    private fun showViewModeDialog() {
+        val labels = resources.getStringArray(R.array.view_mode_labels)
+        AlertDialog.Builder(this)
+            .setTitle(R.string.action_view_mode)
+            .setSingleChoiceItems(labels, viewMode.ordinal) { dialog, which ->
+                setViewMode(ViewMode.values()[which])
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
     private fun showSortDialog() {
         val options = arrayOf(
             getString(R.string.sort_name_asc),
@@ -714,6 +750,7 @@ class MainActivity : AppCompatActivity() {
             isDirectory = file.isDirectory,
             name = name,
             lastModified = file.lastModified(),
+            size = file.length(),
             typeKey = if (file.isDirectory) "" else name.substringAfterLast('.', "").lowercase()
         )
     }
